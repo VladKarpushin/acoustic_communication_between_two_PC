@@ -12,7 +12,7 @@ In this tutorial you will learn:
 Theory
 ------
 
-Offered algorithm allows acoustic communication between to PC 
+Offered algorithm allows acoustic communication between two PC 
 
 
 Result
