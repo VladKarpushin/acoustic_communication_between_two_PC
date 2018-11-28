@@ -8,6 +8,7 @@ In this tutorial you will learn:
 
 -   how to transfer information by OOK modulation
 -   how to transfer information by BPSK modulation
+- 	how to work with ofdm transmitter/receiver
 
 Theory
 ------
