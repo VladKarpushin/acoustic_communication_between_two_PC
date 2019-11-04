@@ -23,7 +23,7 @@ close all,clc,clear all;
 %read a file start
 filename = 'ones_1KB.m';
 %[signalInf_b errmsg] = file2signal('input\ones_1KB.m');
-[signalInf_b errmsg] = file2signal(strcat('input\',filename));
+[signalInf_b errmsg] = file2signal(strcat('..\input\',filename));
 if length(errmsg) ~= 0
     disp('file2signal error');
     disp(errmsg);
@@ -37,13 +37,13 @@ end
 %Fs - Sampling rate in Hz. Valid values depend on the specific audio hardware installed. Typical values supported by most sound cards are 8000, 11025, 22050, 44100, 48000, and 96000 Hz.
 
 %carrier signal forming(start)
-Fs = 96000;     %sample rate
+%Fs = 96000;     %sample rate
 % F = Fs/35;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 Fs = 22050;     %sample rate
 F = Fs/7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 3;     %coefficient of duration of one symbol, kt/F = duration of one symbol
 period = 1024*1;      %packet size
-nInfBits = 1024*8*1;   %number of information bits
+nInfBits = 1024*1*1;   %number of information bits
 %nInfBits = length(signalInf_b);
 Td = 2*pi/Fs;   %sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
