@@ -277,7 +277,7 @@ s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
 
 figure, plot(z_new(1:200));
 figure, plot(s_b(1:200));
-equalizer(s_b, z_new, Fs);
+equalizer(s_b, z_new', Fs);
 % equalizer stop()
 
 
