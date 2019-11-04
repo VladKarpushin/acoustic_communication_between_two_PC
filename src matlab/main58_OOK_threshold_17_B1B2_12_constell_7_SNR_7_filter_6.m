@@ -16,6 +16,7 @@
 %2016-12-04 added code for SNR estimation
 %2016-12-18 added filter. Successfully tested ultrasound
 %2017-01-02 added spectrogram
+%2019-11-04 start to equalizer development
 
 tic
 close all,clc,clear all;
@@ -43,7 +44,7 @@ Fs = 22050;     %sample rate
 F = Fs/7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 3;     %coefficient of duration of one symbol, kt/F = duration of one symbol
 period = 1024*1;      %packet size
-nInfBits = 1024*1*1;   %number of information bits
+nInfBits = 1024*4*1;   %number of information bits
 %nInfBits = length(signalInf_b);
 Td = 2*pi/Fs;   %sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
