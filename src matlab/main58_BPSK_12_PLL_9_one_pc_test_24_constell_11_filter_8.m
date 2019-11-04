@@ -270,6 +270,15 @@ disp(['StdSignSync = ',num2str(StdSignSync(i))]);
 [CorrIntegral SignalComplex] = CalcCoherentReceptionNew3(z,Samples,F,Fs,PLL_offset_n(i));   %coherent reception
 [EstSignal_b MaxSignSync MinSignSync Err delta StdSignSync SignalContell indexA indexB] = CalcSignalEstimationNew4(CorrIntegral,threshold, SignBarkerLong, Samples, SignalComplex); %This function estimates information bits (information signal)
 
+z_new = z(indexA-length(SignBarkerLong):indexA);
+x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
+s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
+figure, plot(z_new(1:200));
+figure, plot(s_b(1:200));
+
+equalizer(z(indexA-length(SignBarkerLong):indexA+length(SignBarkerLong)));
+
+
 indexA = indexA-length(SignBarkerLong);
 indexB = indexB+length(SignBarkerLong);
 if (indexA-4 > 1) && (indexB > 1) && (indexA < length(z)) && (indexB < length(z))  %SNR estimation 
