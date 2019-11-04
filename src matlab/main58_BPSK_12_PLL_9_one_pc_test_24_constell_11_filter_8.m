@@ -24,12 +24,16 @@
 %2016-12-13 added tx filter code
 %2016-12-20 added code for SNR estimation
 %2017-01-02 added spectrogram
+%2019-11-04 start to equalizer development
 
 close all,clc,clear all;
 
 %read a file start
 %[signalInf_b errmsg] = file2signal('input\main13.m');
-[signalInf_b, errmsg] = file2signal('input\main13_2KB.m');
+%[signalInf_b, errmsg] = file2signal('..\input\main13_2KB.m');
+filename = 'ones_1KB.m';
+[signalInf_b errmsg] = file2signal(strcat('..\input\',filename));
+
 if length(errmsg) ~= 0
     disp('file2signal error');
     disp(errmsg);
@@ -45,9 +49,8 @@ end
 Fs = 22050;     %sample rate
 F = Fs/7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
-kt = 1;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-%nInfBits = 4*8*1024;   %number of information bits
-nInfBits = 1024*8*1;   %number of information bits
+kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
+nInfBits = 1024*8*4;   %number of information bits
 %nInfBits = length(signalInf_b);
 Td = 2*pi/Fs;   %sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
