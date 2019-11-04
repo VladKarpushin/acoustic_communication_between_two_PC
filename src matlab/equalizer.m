@@ -18,7 +18,6 @@ title('PSD of sa');
 figure, plot(x, S_B_PSD);
 xlabel('Hz')
 title('PSD of sb');
-s_b
 H = S_A_PSD ./ S_B_PSD;
 figure, plot(x, H);
 xlabel('Hz')
