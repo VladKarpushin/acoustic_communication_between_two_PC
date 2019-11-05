@@ -9,8 +9,8 @@ S_A_PSD = fft(s_a).*conj(fft(s_a));   %power spectrum density
 S_B_PSD = fft(s_b).*conj(fft(s_b));   %power spectrum density
 
 w = round(w*14/2); % 75*14 = (Period of Barker code) * (number of smples per one symbol)
-S_A_PSD = smooth(S_A_PSD, w);
-S_B_PSD = smooth(S_B_PSD, w);
+%S_A_PSD = smooth(S_A_PSD, w);
+%S_B_PSD = smooth(S_B_PSD, w);
 
 x = 1:length(s_a);
 x = x / length(x) * Fs;
