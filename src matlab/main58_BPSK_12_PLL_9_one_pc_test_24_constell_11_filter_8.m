@@ -278,7 +278,8 @@ s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
 figure, plot(z_new(1:200));
 figure, plot(s_b(1:200));
 %w = nSignBarker * length(SignBarkerOne) * kt * Fs/F;    % period of barker code
-w = length(SignBarkerOne) * kt * Fs/F;    % period of barker code
+w = length(SignBarkerOne) * kt * Fs/F;    % period of one barker code in samples, Fs/w - period of one barker code in Hz
+% length(s_b)/w = 75
 equalizer(s_b, z_new', Fs, nSignBarker);
 % equalizer stop()
 
