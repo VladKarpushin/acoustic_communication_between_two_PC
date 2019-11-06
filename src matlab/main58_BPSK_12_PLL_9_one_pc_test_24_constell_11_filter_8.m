@@ -249,7 +249,7 @@ for i = 1:n
 
 end
 ErrSyst = nInfBits*Samples - delta; %systematic error between nInfBits*Samples and delta
-PLL_offset_vs_ [PLL_offset_n' MaxAbsCorrIntegral MaxSignSync MinSignSync MaxSignSync-MinSignSync BER delta ErrSyst StdSignSync];
+PLL_offset_vs_BER = [PLL_offset_n' MaxAbsCorrIntegral MaxSignSync MinSignSync MaxSignSync-MinSignSync BER delta ErrSyst StdSignSync];
 %*******PLL stop ******
 
 %*******output result (start)*********
@@ -279,7 +279,7 @@ figure, plot(z_new(1:200));
 figure, plot(s_b(1:200));
 %w = nSignBarker * length(SignBarkerOne) * kt * Fs/F;       % period of whole set of barker code in samples
 %w = length(SignBarkerOne) * kt * Fs/F;                     % period of one barker code in samples, Fs/w - period of one barker code in Hz
-equalizer(s_b, z_new', Fs, nSignBarker * 7);                % length(s_b)/w = 75 = nSignBarker
+equalizer(s_b, z_new', Fs, nSignBarker * 7);                
 % equalizer stop()
 
 
