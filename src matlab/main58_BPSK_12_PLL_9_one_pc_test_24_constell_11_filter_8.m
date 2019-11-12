@@ -238,9 +238,9 @@ StdSignSync     = (-2)*ones(n,1);   %StdSignSync is std(CCF)
 threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
 for i = 1:n
-    [CorrIntegral] = CalcCoherentReceptionNew2(z,Samples,F,Fs,PLL_offset_n(i));   %coherent reception
+    [CorrIntegral tmp] = CalcCoherentReceptionNew3(z,Samples,F,Fs,PLL_offset_n(i));   %coherent reception
     MaxAbsCorrIntegral(i) = max(abs(CorrIntegral));
-    [EstSignal_b MaxSignSync(i) MinSignSync(i) Err delta(i) StdSignSync(i)] = CalcSignalEstimationNew2(CorrIntegral,threshold, SignBarkerLong, Samples); %This function estimates information bits (information signal)
+    [EstSignal_b MaxSignSync(i) MinSignSync(i) Err delta(i) StdSignSync(i)] = CalcSignalEstimationNew4(CorrIntegral,threshold, SignBarkerLong, Samples, tmp); %This function estimates information bits (information signal)
     if length(EstSignal_b) == length(signalInf_b)                  %check size
         BER(i) = mean(abs(EstSignal_b - signalInf_b)/2);   %The bit error rate (BER) calculation
     else
