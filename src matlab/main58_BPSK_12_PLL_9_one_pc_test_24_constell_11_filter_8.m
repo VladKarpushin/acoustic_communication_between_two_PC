@@ -291,9 +291,7 @@ title('PSD of equalized z');
 
 figure, plot(x, abs(H));
 xlabel('Hz')
-title('H of equalizer');
-
-return
+title('abs of H of equalizer');
 % equalizer stop()
 
 
