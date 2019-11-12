@@ -293,11 +293,6 @@ figure, plot(x, abs(H));
 xlabel('Hz')
 title('H of equalizer');
 
-figure, plot(x, angle(H));
-xlabel('Hz')
-title('angle of H of equalizer');
-
-
 return
 % equalizer stop()
 
