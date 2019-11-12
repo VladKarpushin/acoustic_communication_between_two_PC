@@ -280,7 +280,7 @@ figure, plot(s_b(1:200));
 %w = nSignBarker * length(SignBarkerOne) * kt * Fs/F;       % period of whole set of barker code in samples
 %w = length(SignBarkerOne) * kt * Fs/F;                     % period of one barker code in samples, Fs/w - period of one barker code in Hz
 H = equalizer(s_b, z_new', 7 * nSignBarker, Fs, length(z));
-z_new = ifft(fft(z) .* H); 
+z_new = ifft(fft(z) .* H); % or conj(H)
 Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
 Z_new_PSD(1) = 0;
 x = 1:length(z_new);
@@ -289,9 +289,14 @@ figure, plot(x, Z_new_PSD);
 xlabel('Hz')
 title('PSD of equalized z');
 
-figure, plot(x, H);
+figure, plot(x, abs(H));
 xlabel('Hz')
 title('H of equalizer');
+
+figure, plot(x, angle(H));
+xlabel('Hz')
+title('angle of H of equalizer');
+
 
 return
 % equalizer stop()
