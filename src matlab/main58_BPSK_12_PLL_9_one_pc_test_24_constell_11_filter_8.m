@@ -279,7 +279,7 @@ figure, plot(z_new(1:200));
 figure, plot(s_b(1:200));
 %w = nSignBarker * length(SignBarkerOne) * kt * Fs/F;       % period of whole set of barker code in samples
 %w = length(SignBarkerOne) * kt * Fs/F;                     % period of one barker code in samples, Fs/w - period of one barker code in Hz
-equalizer(s_b, z_new', nSignBarker * 7, Fs, length(z));
+equalizer(s_b, z_new', 7 * nSignBarker, Fs, length(z));
 % equalizer stop()
 
 

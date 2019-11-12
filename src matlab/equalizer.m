@@ -1,6 +1,6 @@
 % 2019-11-04
 % equalizer
-function [H] = equalizer(s_a, s_b, w, Fs, L)
+function [H] = equalizer(s_a, s_b, w, Fs, L_new)
 
 s_a = s_a/max(s_a);
 s_b = s_b/max(s_b);
@@ -14,7 +14,7 @@ s_b = s_b/max(s_b);
 x = 1:length(s_a);
 x = x / length(x) * Fs;
 
-x_new = 1:L;
+x_new = 1:L_new;
 x_new = x_new / length(x_new) * Fs;
 
 % figure, plot(x, S_A_PSD);
@@ -31,14 +31,15 @@ x_new = x_new / length(x_new) * Fs;
 % title('H');
 
 H_a = abs(fft(s_a) ./ fft(s_b) + 1);
-H_a = smooth(H_a, w)
+H_a = smooth(H_a, w);
+H_a = smooth(H_a, w);
 
-figure, plot(x, smooth(H_a, w));
+%figure, plot(x, smooth(H_a, w));
+figure, plot(x, H_a);
 xlabel('Hz')
 title('Ha');
 
 H_new = interp1(x, H_a, x_new);
-%H_new = interp1(x, H_a, x_new, 'spline');
 figure, plot(x_new, H_new);
 xlabel('Hz')
 title('H new');
