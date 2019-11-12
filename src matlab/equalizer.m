@@ -33,13 +33,17 @@ x_new = x_new / length(x_new) * Fs;
 H_a = abs(fft(s_a) ./ fft(s_b) + 1);
 H_a = smooth(H_a, w);
 H_a = smooth(H_a, w);
+%Shimp=ones(n);%квадратная матрица с единичными весами
+%Y = filter2(Shimp,Imp,'same')/(n*n);%сглаживание
+%b = (1/w)*ones(1,w);
+%H_a = filter(b, 1, H_a);
 
 %figure, plot(x, smooth(H_a, w));
 figure, plot(x, H_a);
 xlabel('Hz')
 title('Ha');
 
-H_new = interp1(x, H_a, x_new);
+H_new = interp1(x, H_a, x_new, 'spline');
 figure, plot(x_new, H_new);
 xlabel('Hz')
 title('H new');
