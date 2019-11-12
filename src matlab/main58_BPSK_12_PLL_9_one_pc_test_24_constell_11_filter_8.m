@@ -278,7 +278,8 @@ s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
 % figure, plot(z_new(1:200));
 % figure, plot(s_b(1:200));
 H = equalizer(s_b, z_new', 7 * nSignBarker, length(z));
-z_new = real(ifft(fft(z) .* conj(H))); % or conj(H)
+z_new = real(ifft(fft(z) .* conj(H))); % should be conj(H)
+z_new = z_new - mean(z_new);
 
 Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
 Z_new_PSD(1) = 0;
@@ -295,7 +296,7 @@ title('abs of H of equalizer');
 [CorrIntegral SignalComplex] = CalcCoherentReceptionNew3(z_new,Samples,F,Fs,PLL_offset_n(i));   %coherent reception
 [EstSignal_b MaxSignSync MinSignSync Err delta StdSignSync SignalContell indexA indexB] = CalcSignalEstimationNew4(CorrIntegral,threshold, SignBarkerLong, Samples, SignalComplex); %This function estimates information bits (information signal)
 BER_eq = mean(abs(EstSignal_b - signalInf_b)/2);   %The bit error rate (BER) calculation
-disp(['BER_eq = ',num2str(BER_eq)]);
+disp(['BER_eq = ', num2str(BER_eq)]);
 % equalizer stop()
 
 
