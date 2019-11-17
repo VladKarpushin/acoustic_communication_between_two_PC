@@ -214,17 +214,9 @@ title('PSD of reveived signal z');
 figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[threshold MaxSignSync MinSignSync BER] = calc_ook_receiver(z, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
+%[threshold MaxSignSync MinSignSync BER] = calc_ook_receiver(z, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
+[EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z,Samples,F,Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
 
-m = -2;
-i = -2;
-[m i] = max(MaxSignSync-MinSignSync);
-disp(['threshold = ',num2str(threshold(i))]);
-disp(['MaxSignSync-MinSignSync = ',num2str(m)]);
-disp(['BER = ',num2str(BER(i))]);
-[SignalComplex] = CalcNoncoherentReceptionNew(z,Samples,F,Fs);      %SignalComplex - complex signal
-CorrIntegral = real(SignalComplex).^2+imag(SignalComplex).^2;       %detected amplitude (amplitude envelope quadrature)
-[EstSignal_b a a a a a SignalContell indexA indexB] = CalcSignalEstimationNew4B1B2(CorrIntegral,threshold(i), SignBarkerB1Long,SignBarkerB2Long, Samples,nInfBits,period,SignalComplex); %This function estimates information bits (information signal)
 
 % equalizer start()
 SignBarkerLong = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
