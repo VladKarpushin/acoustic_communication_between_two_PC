@@ -191,7 +191,6 @@ z = getaudiodata(recObj)';      %received signal
 SignBarkerB1Long    = Short2Long(SignBarkerB1, Samples);
 SignBarkerB2Long    = Short2Long(SignBarkerB2, Samples);
 
-
 % Plot the waveform.
 x = 1:length(z);
 x=x/Fs;
@@ -224,7 +223,7 @@ x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
 s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
 
 H = equalizer(s_b, z_new', 3 * nSignBarkerB1, length(z));
-z_new = real(ifft(fft(z) .* (H))); % should be conj(H)
+z_new = real(ifft(fft(z) .* (H))); % should be (H)
 z_new = z_new - mean(z_new);
 
 Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
@@ -247,32 +246,6 @@ if (indexA-4 > 1) && (indexB > 1) && (indexA < length(z)) && (indexB < length(z)
     disp(['SNR estimated = ',num2str(round(SNR_estimated))]);
     disp(['SNR estimated = ',num2str(round(10*log10(SNR_estimated))), ' [dB]']);
 end
-
-% x = 1:length(z);
-% x=x/Fs;
-% figure,plot(x,CorrIntegral);
-% xlabel('sec');
-% title('SignAmp');
-% 
-% figure,plot(x,CorrIntegral,'r',x,z,'b');
-% xlabel('sec');
-% title('SignAmp (r) and z (b)');
-% 
-% c = linspace(1,10,length(SignalContell));                   %from black to yellow
-% figure,scatter(real(SignalContell),imag(SignalContell),[],c);   %Create a scatter plot and vary the circle color.
-% hold on;
-% theta = linspace(0,2*pi);
-% r = sqrt(thr);
-% x = r*cos(theta);
-% y = r*sin(theta);
-% plot(x,y);
-% 
-% %ylim(xlim);
-% axis equal; %Use the same length for the data units along each axis.
-% xlabel('In Phase');
-% ylabel('Quadrature');
-% title('Signal Constellation');
-
 
 %****bit error calculation start*******
 %The bit error rate (BER) is the number of bit errors per unit time. The bit error ratio (also BER) is the number of bit errors divided by the total number of transferred bits during a studied time interval. BER is a unitless performance measure, often expressed as a percentage.

@@ -278,7 +278,7 @@ s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
 % figure, plot(z_new(1:200));
 % figure, plot(s_b(1:200));
 H = equalizer(s_b, z_new', 7 * nSignBarker, length(z));
-z_new = real(ifft(fft(z) .* conj(H))); % should be conj(H)
+z_new = real(ifft(fft(z) .* (H))); % should be conj(H)
 z_new = z_new - mean(z_new);
 
 Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
