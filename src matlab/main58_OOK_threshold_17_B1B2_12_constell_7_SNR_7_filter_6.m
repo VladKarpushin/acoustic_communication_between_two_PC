@@ -214,15 +214,16 @@ title('PSD of reveived signal z');
 figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[thr_vs_BER] = calc_ook_receiver(z, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period);
+[threshold MaxSignSync MinSignSync BER] = calc_ook_receiver(z, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
 
-%*******output result (start)*********
 m = -2;
 i = -2;
 [m i] = max(MaxSignSync-MinSignSync);
 disp(['threshold = ',num2str(threshold(i))]);
 disp(['MaxSignSync-MinSignSync = ',num2str(m)]);
 disp(['BER = ',num2str(BER(i))]);
+[SignalComplex] = CalcNoncoherentReceptionNew(z,Samples,F,Fs);      %SignalComplex - complex signal
+CorrIntegral = real(SignalComplex).^2+imag(SignalComplex).^2;       %detected amplitude (amplitude envelope quadrature)
 [EstSignal_b a a a a a SignalContell indexA indexB] = CalcSignalEstimationNew4B1B2(CorrIntegral,threshold(i), SignBarkerB1Long,SignBarkerB2Long, Samples,nInfBits,period,SignalComplex); %This function estimates information bits (information signal)
 
 % equalizer start()
@@ -232,8 +233,6 @@ z_new = z(indexA-length(SignBarkerLong):indexA-1);
 x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
 s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
 
-% figure, plot(z_new(1:200));
-% figure, plot(s_b(1:200));
 H = equalizer(s_b, z_new', 3 * nSignBarkerB1, length(z));
 z_new = real(ifft(fft(z) .* (H))); % should be conj(H)
 z_new = z_new - mean(z_new);
@@ -247,6 +246,15 @@ xlabel('Hz')
 title('PSD of equalized z');
 % equalizer stop()
 
+[threshold MaxSignSync MinSignSync BER] = calc_ook_receiver(z_new, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
+m = -2;
+i = -2;
+[m i] = max(MaxSignSync-MinSignSync);
+disp(['MaxSignSync-MinSignSync = ',num2str(m)]);
+disp(['BER eq= ',num2str(BER(i))]);
+[SignalComplex] = CalcNoncoherentReceptionNew(z_new,Samples,F,Fs);      %SignalComplex - complex signal
+CorrIntegral = real(SignalComplex).^2+imag(SignalComplex).^2;       %detected amplitude (amplitude envelope quadrature)
+[EstSignal_b a a a a a SignalContell indexA indexB] = CalcSignalEstimationNew4B1B2(CorrIntegral,threshold(i), SignBarkerB1Long,SignBarkerB2Long, Samples,nInfBits,period,SignalComplex); %This function estimates information bits (information signal)
 
 indexA = indexA-length(SignBarkerB1Long);
 indexB = indexB+length(SignBarkerB1Long);
@@ -282,7 +290,6 @@ axis equal; %Use the same length for the data units along each axis.
 xlabel('In Phase');
 ylabel('Quadrature');
 title('Signal Constellation');
-%*******output result (stop)*********
 
 
 %****bit error calculation start*******
