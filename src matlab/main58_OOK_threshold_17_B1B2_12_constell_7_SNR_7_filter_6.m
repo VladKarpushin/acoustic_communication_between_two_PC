@@ -16,7 +16,7 @@
 %2016-12-04 added code for SNR estimation
 %2016-12-18 added filter. Successfully tested ultrasound
 %2017-01-02 added spectrogram
-%2019-11-04 start to equalizer development
+%2019-11-16 start to equalizer development
 
 tic
 close all,clc,clear all;
@@ -214,43 +214,7 @@ title('PSD of reveived signal z');
 figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-
-%****noncoherent reception start *******
-[SignalComplex] = CalcNoncoherentReceptionNew(z,Samples,F,Fs);      %SignalComplex - complex signal
-CorrIntegral = real(SignalComplex).^2+imag(SignalComplex).^2;       %detected amplitude (amplitude envelope quadrature)
-
-% x = 1:length(z);
-% x=x/Fs;
-% figure,plot(x,CorrIntegral);
-% xlabel('sec');
-% title('SignAmp');
-% 
-% figure,plot(x,CorrIntegral,'r',x,z,'b');
-% xlabel('sec');
-% title('SignAmp (r) and z (b)');
-%****noncoherent reception stop*******
-
-%****information signal estimation (start)*******
-%[EstSignal_b Err] = CalcSignalEstimation(SignAmp,threshold, SignBarkerLong, Samples, Fs); %This function estimates information bits (information signal)
-threshold = 0:0.01:0.6;  %resolver threshold
-n = length(threshold);
-BER = (-2)*ones(n,1);
-MaxSignSync = (-2)*ones(n,1);
-MinSignSync = (-2)*ones(n,1);
-
-for i = 1:n
-    %[EstSignal_b MaxSignSync(i) MinSignSync(i) Err] = CalcSignalEstimationNew(CorrIntegral,threshold(i), SignBarkerLong, Samples); %This function estimates information bits (information signal)
-    [EstSignal_b MaxSignSync(i) MinSignSync(i) Err] = CalcSignalEstimationNew4B1B2(CorrIntegral,threshold(i), SignBarkerB1Long,SignBarkerB2Long, Samples,nInfBits,period,SignalComplex); %This function estimates information bits (information signal)
-    if length(EstSignal_b) == length(signalInf_b)                  %check Freq assignment error
-        BER(i) = mean(abs(EstSignal_b - signalInf_b)/2);   %The bit error rate (BER)
-    else
-        disp(['Error. Can not calculate BER, because of different array size. length(EstSignal_b) = ',num2str(length(EstSignal_b)), ',  length(signalInf_b) = ', num2str(length(signalInf_b))]);
-    end
-end
-thr_vs_BER = [threshold' MaxSignSync MinSignSync MaxSignSync-MinSignSync BER];
-%****information signal estimation (stop)*******
-
-
+[thr_vs_BER] = calc_ook_receiver(z, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period);
 
 %*******output result (start)*********
 m = -2;
@@ -260,6 +224,28 @@ disp(['threshold = ',num2str(threshold(i))]);
 disp(['MaxSignSync-MinSignSync = ',num2str(m)]);
 disp(['BER = ',num2str(BER(i))]);
 [EstSignal_b a a a a a SignalContell indexA indexB] = CalcSignalEstimationNew4B1B2(CorrIntegral,threshold(i), SignBarkerB1Long,SignBarkerB2Long, Samples,nInfBits,period,SignalComplex); %This function estimates information bits (information signal)
+
+% equalizer start()
+SignBarkerLong = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
+%SignBarkerLong = SignBarkerB1Long;
+z_new = z(indexA-length(SignBarkerLong):indexA-1);
+x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
+s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
+
+% figure, plot(z_new(1:200));
+% figure, plot(s_b(1:200));
+H = equalizer(s_b, z_new', 3 * nSignBarkerB1, length(z));
+z_new = real(ifft(fft(z) .* (H))); % should be conj(H)
+z_new = z_new - mean(z_new);
+
+Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
+Z_new_PSD(1) = 0;
+x = 1:length(z_new);
+x = x/length(z_new)*Fs;
+figure, plot(x, Z_new_PSD);
+xlabel('Hz')
+title('PSD of equalized z');
+% equalizer stop()
 
 
 indexA = indexA-length(SignBarkerB1Long);
