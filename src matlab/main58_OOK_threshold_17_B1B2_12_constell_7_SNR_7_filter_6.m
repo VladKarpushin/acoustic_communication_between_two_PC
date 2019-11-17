@@ -236,7 +236,7 @@ xlabel('Hz')
 title('PSD of equalized z');
 % equalizer stop()
 
-[EstSignal_b, SignalContell, indexA, indexB, CorrIntegral, thr] = calc_ook_receiver_new(z_new, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
+[EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z_new, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
 
 indexA = indexA-length(SignBarkerB1Long);
 indexB = indexB+length(SignBarkerB1Long);
@@ -248,30 +248,30 @@ if (indexA-4 > 1) && (indexB > 1) && (indexA < length(z)) && (indexB < length(z)
     disp(['SNR estimated = ',num2str(round(10*log10(SNR_estimated))), ' [dB]']);
 end
 
-x = 1:length(z);
-x=x/Fs;
-figure,plot(x,CorrIntegral);
-xlabel('sec');
-title('SignAmp');
-
-figure,plot(x,CorrIntegral,'r',x,z,'b');
-xlabel('sec');
-title('SignAmp (r) and z (b)');
-
-c = linspace(1,10,length(SignalContell));                   %from black to yellow
-figure,scatter(real(SignalContell),imag(SignalContell),[],c);   %Create a scatter plot and vary the circle color.
-hold on;
-theta = linspace(0,2*pi);
-r = sqrt(thr);
-x = r*cos(theta);
-y = r*sin(theta);
-plot(x,y);
-
-%ylim(xlim);
-axis equal; %Use the same length for the data units along each axis.
-xlabel('In Phase');
-ylabel('Quadrature');
-title('Signal Constellation');
+% x = 1:length(z);
+% x=x/Fs;
+% figure,plot(x,CorrIntegral);
+% xlabel('sec');
+% title('SignAmp');
+% 
+% figure,plot(x,CorrIntegral,'r',x,z,'b');
+% xlabel('sec');
+% title('SignAmp (r) and z (b)');
+% 
+% c = linspace(1,10,length(SignalContell));                   %from black to yellow
+% figure,scatter(real(SignalContell),imag(SignalContell),[],c);   %Create a scatter plot and vary the circle color.
+% hold on;
+% theta = linspace(0,2*pi);
+% r = sqrt(thr);
+% x = r*cos(theta);
+% y = r*sin(theta);
+% plot(x,y);
+% 
+% %ylim(xlim);
+% axis equal; %Use the same length for the data units along each axis.
+% xlabel('In Phase');
+% ylabel('Quadrature');
+% title('Signal Constellation');
 
 
 %****bit error calculation start*******

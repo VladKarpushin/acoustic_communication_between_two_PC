@@ -1,5 +1,5 @@
 % 2019-11-17
-function [EstSignal_b, SignalContell, indexA, indexB, CorrIntegral, thr] = calc_ook_receiver_new(z,Samples,F,Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b)
+function [EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z,Samples,F,Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b)
 
 %****noncoherent reception start *******
 [SignalComplex] = CalcNoncoherentReceptionNew(z,Samples,F,Fs);      %SignalComplex - complex signal
@@ -35,3 +35,28 @@ disp(['BER = ',num2str(BER(i))]);
 CorrIntegral = real(SignalComplex).^2+imag(SignalComplex).^2;       %detected amplitude (amplitude envelope quadrature)
 [EstSignal_b a a a a a SignalContell indexA indexB] = CalcSignalEstimationNew4B1B2(CorrIntegral,threshold(i), SignBarkerB1Long,SignBarkerB2Long, Samples,nInfBits,period,SignalComplex); %This function estimates information bits (information signal)
 thr = threshold(i);
+
+x = 1:length(z);
+x=x/Fs;
+figure,plot(x,CorrIntegral);
+xlabel('sec');
+title('SignAmp');
+
+figure,plot(x,CorrIntegral,'r',x,z,'b');
+xlabel('sec');
+title('SignAmp (r) and z (b)');
+
+c = linspace(1,10,length(SignalContell));                   %from black to yellow
+figure,scatter(real(SignalContell),imag(SignalContell),[],c);   %Create a scatter plot and vary the circle color.
+hold on;
+theta = linspace(0,2*pi);
+r = sqrt(thr);
+x = r*cos(theta);
+y = r*sin(theta);
+plot(x,y);
+
+%ylim(xlim);
+axis equal; %Use the same length for the data units along each axis.
+xlabel('In Phase');
+ylabel('Quadrature');
+title('Signal Constellation');
