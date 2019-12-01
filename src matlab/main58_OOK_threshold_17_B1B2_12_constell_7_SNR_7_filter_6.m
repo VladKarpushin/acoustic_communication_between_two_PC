@@ -212,7 +212,7 @@ title('PSD of reveived signal z');
 figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z,Samples,F,Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
+[EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
 
 % equalization start()
 sign_x = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
