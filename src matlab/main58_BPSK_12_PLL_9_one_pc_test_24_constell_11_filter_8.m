@@ -271,15 +271,12 @@ disp(['StdSignSync = ',num2str(StdSignSync(i))]);
 [EstSignal_b MaxSignSync MinSignSync Err delta StdSignSync SignalContell indexA indexB] = CalcSignalEstimationNew4(CorrIntegral,threshold, SignBarkerLong, Samples, SignalComplex); %This function estimates information bits (information signal)
 
 % equalizer start()
-z_new = z(indexA-length(SignBarkerLong):indexA-1);
+%sign_x = SignalLongFilter(SignBarkerLong, Samples, Fs);     %filtering
+sign_x = SignBarkerLong;
 x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
-s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
+sign_x = sign_x.*sin(x(1:length(sign_x)))';
 
-% figure, plot(z_new(1:200));
-% figure, plot(s_b(1:200));
-H = equalizer(s_b, z_new', 7 * nSignBarker, length(z));
-z_new = real(ifft(fft(z) .* (H))); % should be conj(H)
-z_new = z_new - mean(z_new);
+z_new = equalizer_first(sign_x, z, 3 * nSignBarker, indexA);
 
 Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
 Z_new_PSD(1) = 0;
@@ -288,10 +285,6 @@ x = x/length(z_new)*Fs;
 figure, plot(x, Z_new_PSD);
 xlabel('Hz')
 title('PSD of equalized z');
-
-figure, plot(x, abs(H));
-xlabel('Hz')
-title('abs of H of equalizer');
 
 [CorrIntegral SignalComplex] = CalcCoherentReceptionNew3(z_new,Samples,F,Fs,PLL_offset_n(i));   %coherent reception
 [EstSignal_b MaxSignSync MinSignSync Err delta StdSignSync SignalContell indexA indexB] = CalcSignalEstimationNew4(CorrIntegral,threshold, SignBarkerLong, Samples, SignalComplex); %This function estimates information bits (information signal)
