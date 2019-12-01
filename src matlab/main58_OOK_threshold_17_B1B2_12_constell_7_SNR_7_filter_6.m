@@ -218,6 +218,7 @@ title('Received signal spectrogram');
 % equalizer start()
 SignBarkerLong = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
 %SignBarkerLong = SignBarkerB1Long;
+
 z_new = z(indexA-length(SignBarkerLong):indexA-1);
 x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
 s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
