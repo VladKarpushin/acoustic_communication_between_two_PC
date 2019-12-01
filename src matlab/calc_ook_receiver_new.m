@@ -1,5 +1,5 @@
 % 2019-11-17
-function [EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z,Samples,F,Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b)
+function [EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b)
 
 %****noncoherent reception start *******
 [SignalComplex] = CalcNoncoherentReceptionNew(z,Samples,F,Fs);      %SignalComplex - complex signal
