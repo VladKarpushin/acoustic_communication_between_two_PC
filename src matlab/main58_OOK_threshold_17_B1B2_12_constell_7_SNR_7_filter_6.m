@@ -187,7 +187,6 @@ disp('End of Recording.');
 z = getaudiodata(recObj)';      %received signal
 %z = u';
 
-%SignBarkerLong = Short2Long(SignBarker, Samples);
 SignBarkerB1Long    = Short2Long(SignBarkerB1, Samples);
 SignBarkerB2Long    = Short2Long(SignBarkerB2, Samples);
 
@@ -216,14 +215,14 @@ title('Received signal spectrogram');
 [EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z,Samples,F,Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
 
 % equalizer start()
-SignBarkerLong = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
-%SignBarkerLong = SignBarkerB1Long;
+sign_x = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
+%sign_x = SignBarkerB1Long;
 
-z_new = z(indexA-length(SignBarkerLong):indexA-1);
+z_new = z(indexA-length(sign_x):indexA-1);
 x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
-s_b = SignBarkerLong.*sin(x(1:length(SignBarkerLong)))';
+sign_x = sign_x.*sin(x(1:length(sign_x)))';
 
-H = equalizer(s_b, z_new', 3 * nSignBarkerB1, length(z));
+H = equalizer(sign_x, z_new', 3 * nSignBarkerB1, length(z));
 z_new = real(ifft(fft(z) .* (H))); % should be (H)
 z_new = z_new - mean(z_new);
 
