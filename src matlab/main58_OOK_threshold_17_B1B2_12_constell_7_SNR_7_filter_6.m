@@ -217,7 +217,6 @@ title('Received signal spectrogram');
 % equalization start()
 sign_x = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
 %sign_x = SignBarkerB1Long;
-
 x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
 sign_x = sign_x.*sin(x(1:length(sign_x)))';
 
@@ -226,7 +225,7 @@ z_new = equalizer_first(sign_x, z, 3 * nSignBarkerB1, indexA);
 Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
 Z_new_PSD(1) = 0;
 x = 1:length(z_new);
-x = x/length(z_new)*Fs;
+x = x/length(z_new) * Fs;
 figure, plot(x, Z_new_PSD);
 xlabel('Hz')
 title('PSD of equalized z');
