@@ -218,13 +218,15 @@ title('Received signal spectrogram');
 sign_x = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
 %sign_x = SignBarkerB1Long;
 
-z_new = z(indexA-length(sign_x):indexA-1);
 x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
 sign_x = sign_x.*sin(x(1:length(sign_x)))';
 
-H = equalizer(sign_x, z_new', 3 * nSignBarkerB1, length(z));
-z_new = real(ifft(fft(z) .* (H))); % should be (H)
-z_new = z_new - mean(z_new);
+z_new = equalizer_first(sign_x, z, 3 * nSignBarkerB1, indexA);
+
+% z_new = z(indexA-length(sign_x):indexA-1);
+% H = equalizer(sign_x, z_new', 3 * nSignBarkerB1, length(z));
+% z_new = real(ifft(fft(z) .* (H))); % should be (H)
+% z_new = z_new - mean(z_new);
 
 Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
 Z_new_PSD(1) = 0;
