@@ -35,12 +35,10 @@ corr_integral = real(signal_complex).^2 + imag(signal_complex).^2;       %detect
 [est_signal_b a a a a a signal_contell index_a index_b] = CalcSignalEstimationNew4B1B2(corr_integral, threshold(i), SignBarkerB1Long, SignBarkerB2Long, samples, n_inf_bits, period, signal_complex); % this function estimates information bits (information signal)
 thr = threshold(i);
 
+plot_time(corr_integral, Fs, 'sec', 'corr integral')
+
 x = 1:length(z);
 x = x / Fs;
-figure, plot(x, corr_integral);
-xlabel('sec');
-title('SignAmp');
-
 figure, plot(x, corr_integral, 'r', x, z, 'b');
 xlabel('sec');
 title('SignAmp (r) and z (b)');
