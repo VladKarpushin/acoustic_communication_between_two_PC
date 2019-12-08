@@ -67,7 +67,7 @@ n_total_bits = delay + 2 * length(SignBarkerB1) + n * length(SignBarkerB2) + n_i
 show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits);
 %carrier signal forming(stop)
 
-%modulation(start)
+% modulation(start)
 signalInf_b = 2 * randi([0, 1], n_inf_bits, 1) - 1; % information signal = noise
 
 % signalInf_b = -1*ones(n_inf_bits,1);       % information signal = [1 -1 1 -1 1 -1]
@@ -101,7 +101,7 @@ SignalLong = SignalLongFilter(SignalLong, samples, Fs);     % filtering
 u = SignalLong.*sin(x)';
 
 %signal(1:5)
-%modulation(stop)
+% modulation(stop)
 
 %air channel modeling (start)
 u = u / std(u);
