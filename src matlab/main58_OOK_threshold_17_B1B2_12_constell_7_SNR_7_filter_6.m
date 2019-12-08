@@ -5,7 +5,7 @@
 %2016-04-26 finished
 %2016-05-22 added duration of one symbol output/output
 %2016-05-29 added time delay in a beginning of transmission (unit is bit)
-%2016-06-05 added comments - Samples
+%2016-06-05 added comments - samples
 %2016-06-18 auto-calculated threshold
 %2016-10-09 added new functions from BPSK version
 %2016-10-11 realised sync algorithm. Now we can trasfer any number of bits
@@ -24,7 +24,7 @@ close all,clc,clear all;
 %read a file start
 filename = 'ones_1KB.m';
 %[signalInf_b errmsg] = file2signal('input\ones_1KB.m');
-[signalInf_b errmsg] = file2signal(strcat('..\input\',filename));
+[signalInf_b errmsg] = file2signal(strcat('..\input\', filename));
 if length(errmsg) ~= 0
     disp('file2signal error');
     disp(errmsg);
@@ -41,113 +41,98 @@ end
 % Fs = 96000;     %sample rate
 % F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 
-Fs = 22050;     %sample rate
-F = Fs/7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
-kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-period = 1024*4*1;      %packet size
-nInfBits = 1024*4*2;   %number of information bits
+Fs = 22050;         % sample rate
+F = Fs / 7;         % frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
+kt = 2;             % coefficient of duration of one symbol, kt/F = duration of one symbol
+period = 1024 * 4 * 1;          % packet size
+n_inf_bits = 1024 * 4 * 2;      % number of information bits
 
-%nInfBits = length(signalInf_b);
-Td = 2*pi/Fs;   %sampling interval
+%n_inf_bits = length(signalInf_b);
+Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
 
 %*****Barker codes set generation (start)*****
-nSignBarkerB1 = 75;   %quantity of Barker codes in a set.
-nSignBarkerB2 = 75;   %quantity of Barker codes in a set.
-SignBarkerOneB1 = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
-SignBarkerOneB2 = [1 1 1 -1 -1 -1 1 -1 -1 1 -1]'; %Barker code N=11. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems.
+nSignBarkerB1 = 75;   % quantity of Barker codes in a set.
+nSignBarkerB2 = 75;   % quantity of Barker codes in a set.
+SignBarkerOneB1 = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; % Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
+SignBarkerOneB2 = [1 1 1 -1 -1 -1 1 -1 -1 1 -1]'; % Barker code N=11. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems.
 SignBarkerB1 = GetPeriodicBarkerCode(SignBarkerOneB1, nSignBarkerB1);
 SignBarkerB2 = GetPeriodicBarkerCode(SignBarkerOneB2, nSignBarkerB2);
 %*****Barker codes set generation (stop)*****
 
-n = fix(nInfBits/period);
-nTotalBits = delay + 2*length(SignBarkerB1) + n*length(SignBarkerB2) + nInfBits; %it needs to calculate
-%nTotalBits = delay + 2*length(SignBarker) + nInfBits;
-t = kt*nTotalBits/F;   %common transmit time
+n = fix(n_inf_bits / period);
+n_total_bits = delay + 2 * length(SignBarkerB1) + n * length(SignBarkerB2) + n_inf_bits; % total bits plus delay
+%n_total_bits = delay + 2*length(SignBarker) + n_inf_bits;
 
-disp(['Sampling rate = ',num2str(Fs),' Hz']);
-disp(['Freq of signal1 = ',num2str(F),' Hz']);
-disp(['Duration of one symbol = ',num2str(1000*kt/F),' ms']);
-disp(['BW = ',num2str(2/(kt/F)),' Hz']);
-disp(['Number of total transmitted bits = ',num2str(nTotalBits),' [bits]']);
-disp(['Number of information transmitted bits = ',num2str(nInfBits),' [bits]']);
-disp(['Physical layer gross bitrate = ',num2str(F/kt),' [bits/s]']);
-disp(['Net bitrate = ',num2str(fix(nInfBits/t)),' [bits/s]']);
-disp(['Symbol rate = ',num2str(F/kt),' [Hz]']);
-disp(['common transmit time = ',num2str(t),' [s]']);
+t = kt * n_total_bits / F;   %common transmit time
+disp(['Sampling rate = ', num2str(Fs),' Hz']);
+disp(['Freq of signal1 = ', num2str(F),' Hz']);
+disp(['Duration of one symbol = ', num2str(1000 * kt / F),' ms']);
+disp(['BW = ', num2str(2 / (kt / F)),' Hz']);
+disp(['Number of total transmitted bits = ', num2str(n_total_bits),' [bits]']);
+disp(['Number of information transmitted bits = ', num2str(n_inf_bits),' [bits]']);
+disp(['Physical layer gross bitrate = ', num2str(F / kt),' [bits/s]']);
+disp(['Net bitrate = ', num2str(fix(n_inf_bits / t)),' [bits/s]']);
+disp(['Symbol rate = ', num2str(F / kt),' [Hz]']);
+disp(['common transmit time = ', num2str(t),' [s]']);
 %carrier signal forming(stop)
 
 %modulation(start)
-signalInf_b = 2*randi([0,1],nInfBits,1)-1; %information signal = noise
+signalInf_b = 2 * randi([0, 1], n_inf_bits, 1) - 1; % information signal = noise
 
-% signalInf_b = -1*ones(nInfBits,1);       %information signal = [1 -1 1 -1 1 -1]
-% n=1:2:nInfBits;
+% signalInf_b = -1*ones(n_inf_bits,1);       % information signal = [1 -1 1 -1 1 -1]
+% n=1:2:n_inf_bits;
 % signalInf_b(n) = 1;
 % 
-% signalInf_b = ones(nInfBits,1);       %information signal = [-1 -1 -1 1 1 1]
-% signalInf_b(1:fix(nInfBits/2)) = -1;
+% signalInf_b = ones(n_inf_bits,1);       %information signal = [-1 -1 -1 1 1 1]
+% signalInf_b(1:fix(n_inf_bits/2)) = -1;
 
 
-%adding sync marks (start)
+% adding sync marks (start)
 %signal  = InsertSyncB1(signalInf_b,SignBarker, delay);
-signal          = InsertSyncB2(signalInf_b,SignBarkerB2, period);
-signal          = InsertSyncB1(signal,SignBarkerB1, delay);
+signal          = InsertSyncB2(signalInf_b, SignBarkerB2, period);
+signal          = InsertSyncB1(signal, SignBarkerB1, delay);
+% adding sync marks (stop)
 
-%adding sync marks (stop)
-
-Samples = kt*Fs/F;       %!!!! number of samples per one symbol
-if abs(Samples - fix(Samples)) > 0                  %check Freq assignment error
-    disp(['Error. Freq assignment error. Samples = kt*Fs/F = ',num2str(Samples)]);
+samples = kt * Fs / F;       %!!!! number of samples per one symbol
+if abs(samples - fix(samples)) > 0                  % check Freq assignment error
+    disp(['Error. Freq assignment error. samples = kt*Fs/F = ', num2str(samples)]);
     return;
 end
 
 
-%x = linspace(0,kt*nTotalBits*2*pi-(F*Td),nTotalBits*Samples);
-x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
+%x = linspace(0,kt*n_total_bits*2*pi-(F*Td),n_total_bits*samples);
+x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 
-SignalLong = (Short2Long(signal, Samples)+1)/2;     %OOK
-%SignalLong = (Short2Long(signal, Samples));        %BPSK
-SignalLong(1:delay*Samples) = 0;
-SignalLong = SignalLongFilter(SignalLong, Samples, Fs);     %filtering
+SignalLong = (Short2Long(signal, samples) + 1) / 2;     % OOK
+%SignalLong = (Short2Long(signal, samples));            % BPSK
+SignalLong(1:delay * samples) = 0;
+SignalLong = SignalLongFilter(SignalLong, samples, Fs);     % filtering
 u = SignalLong.*sin(x)';
 
 %signal(1:5)
 %modulation(stop)
 
 %air channel modeling (start)
-u = u/std(u);
+u = u / std(u);
 % SNR = 1000;
 % signal_noise = randn(length(u),1)/SNR;
 % u = u + signal_noise;
 %air channel modeling (stop)
 
-x1 = 0:2*pi/100:kt*2*pi;
-x2 = 0:F*Td:kt*2*pi;
-figure,plot(x1,sin(x1),x2,sin(x2),'o');
+x1 = 0:2 * pi / 100:kt * 2 * pi;
+x2 = 0:F * Td:kt * 2 * pi;
+figure, plot(x1, sin(x1), x2, sin(x2), 'o');
 title('one symbol');
 
-U_PSD = fft(u).*conj(fft(u));   %power spectrum density
+plot_time(u, Fs, 'sec', 'transmitted signal u')
+plot_psd(u, Fs, 'Hz', 'PSD of transmitted signal u');
 
-x = 1:length(u);
-x=x/Fs;
-figure,plot(x,u);
-xlabel('sec');
-title('transmitted signal u');
-
-% x = 1:floor(length(U_PSD)/2);
-% figure,plot(x/t,U_PSD(x));
-x = 1:length(U_PSD);
-x = x/length(U_PSD)*Fs;
-figure,plot(x,U_PSD);
-xlabel('Hz')
-title('PSD of transmitted signal u');
-
-figure, spectrogram(u,400,100,[],Fs);
+figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-%sound([u.*0 u],Fs,nBits);         %modulated signal
-sound(u,Fs,nBits);         %modulated signal
+sound(u, Fs, nBits);         %modulated signal
 
 %return
 
@@ -160,18 +145,17 @@ sound(u,Fs,nBits);         %modulated signal
 %Fs = 44100;% 44100; %96000 
 % F = 5*Fs/100;  %frequency of signal, 200<F<Fs/2, [Hz]. even(1*Fs/100, 2*Fs/100, 4*Fs/100). F = 2(and 4)*Fs/100 - optimum
 % kF = 4;         %f1 = kF*f0, kF=2(and 8) - optimum
-% nInfBits = 1*8*1024;   %number of information bits
+% n_inf_bits = 1*8*1024;   %number of information bits
 % SignBarker = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1             1 1 1 1 1 -1 -1 1 1 -1 1 -1 1              1 1 1 1 1 -1 -1 1 1 -1 1 -1 1            1 1 1 1 1 -1 -1 1 1 -1 1 -1 1     1 1 1 1 1 -1 -1 1 1 -1 1 -1 1             1 1 1 1 1 -1 -1 1 1 -1 1 -1 1              1 1 1 1 1 -1 -1 1 1 -1 1 -1 1            1 1 1 1 1 -1 -1 1 1 -1 1 -1 1     1 1 1 1 1 -1 -1 1 1 -1 1 -1 1             1 1 1 1 1 -1 -1 1 1 -1 1 -1 1              1 1 1 1 1 -1 -1 1 1 -1 1 -1 1            1 1 1 1 1 -1 -1 1 1 -1 1 -1 1     1 1 1 1 1 -1 -1 1 1 -1 1 -1 1             1 1 1 1 1 -1 -1 1 1 -1 1 -1 1              1 1 1 1 1 -1 -1 1 1 -1 1 -1 1            1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13
 % %SignBarker = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13
-%tt = 1+kt*(2*length(SignBarker) + nInfBits)/F;   %common transmit time
-n = fix(nInfBits/period);
-tt = 1+kt*(2*length(SignBarkerB1) + n*length(SignBarkerB2) + nInfBits)/F;   %common transmit time
+%tt = 1+kt*(2*length(SignBarker) + n_inf_bits)/F;   %common transmit time
+n = fix(n_inf_bits / period);
+tt = 1 + kt * (2 * length(SignBarkerB1) + n * length(SignBarkerB2) + n_inf_bits)/F;   %common transmit time
 
-%threshold = 0.12;   %resolver threshold
 nBits=24;
-Samples = kt*Fs/F;       %!!!! number of samples per one symbol
-if abs(Samples - fix(Samples)) > 0                  %check Freq assignment error
-    disp(['Error. Freq assignment error. Samples = kt*Fs/F = ',num2str(Samples)]);
+samples = kt*Fs/F;       %!!!! number of samples per one symbol
+if abs(samples - fix(samples)) > 0                  %check Freq assignment error
+    disp(['Error. Freq assignment error. samples = kt*Fs/F = ',num2str(samples)]);
     return;
 end
 
@@ -187,82 +171,33 @@ disp('End of Recording.');
 z = getaudiodata(recObj)';      %received signal
 %z = u';
 
-SignBarkerB1Long    = Short2Long(SignBarkerB1, Samples);
-SignBarkerB2Long    = Short2Long(SignBarkerB2, Samples);
+SignBarkerB1Long = Short2Long(SignBarkerB1, samples);
+SignBarkerB2Long = Short2Long(SignBarkerB2, samples);
 
-% Plot the waveform.
-x = 1:length(z);
-x=x/Fs;
-figure,plot(x,z);
-xlabel('sec');
-title('recorded signal z');
-
-Z_PSD = fft(z).*conj(fft(z));   %power spectrum density
-% x = 1:floor(length(Z_PSD)/2);
-% figure,plot(x/tt,Z_PSD(x));
-Z_PSD(length(Z_PSD)) = 0;
-Z_PSD(1) = 0;
-x = 1:length(Z_PSD);
-x = x/length(Z_PSD)*Fs;
-figure,plot(x,Z_PSD);
-
-xlabel('Hz')
-title('PSD of reveived signal z');
+plot_time(z, Fs, 'sec', 'recorded signal z')
+plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 
 figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
+[est_signal_b, signal_contell, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, n_inf_bits, period, signalInf_b);
 
 % equalization start()
-sign_x = SignalLongFilter(SignBarkerB1Long, Samples, Fs);     %filtering
+sign_x = SignalLongFilter(SignBarkerB1Long, samples, Fs);     %filtering
 %sign_x = SignBarkerB1Long;
-x = 0:F*Td:(kt*nTotalBits*2*pi)-(F*Td);
+x = 0:F*Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 sign_x = sign_x.*sin(x(1:length(sign_x)))';
-
-z_new = equalizer_first(sign_x, z, 3 * nSignBarkerB1, indexA);
-
-Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
-Z_new_PSD(1) = 0;
-x = 1:length(z_new);
-x = x/length(z_new) * Fs;
-figure, plot(x, Z_new_PSD);
-xlabel('Hz')
-title('PSD of equalized z');
+z_new = equalizer_first(sign_x, z, 3 * nSignBarkerB1, index_a);
+plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalization stop()
 
-[EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z_new, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
-
-calc_snr(z, length(SignBarkerB1Long), indexA, indexB);
-
-% indexA = indexA-length(SignBarkerB1Long);
-% indexB = indexB+length(SignBarkerB1Long);
-% if (indexA-4 > 1) && (indexB > 1) && (indexA < length(z)) && (indexB < length(z))  %SNR estimation 
-%     s = std(z(indexA:indexB));
-%     n = std(z(1:indexA-4));
-%     SNR_estimated = s/n;
-%     disp(['SNR estimated = ', num2str(round(SNR_estimated))]);
-%     disp(['SNR estimated = ', num2str(round(10 * log10(SNR_estimated))), ' [dB]']);
-% end
-
-%****bit error calculation start*******
-%The bit error rate (BER) is the number of bit errors per unit time. The bit error ratio (also BER) is the number of bit errors divided by the total number of transferred bits during a studied time interval. BER is a unitless performance measure, often expressed as a percentage.
-% EstSignal_b
-% signalInf_b
-if length(EstSignal_b) ~= length(signalInf_b)                  %check Freq assignment error
-    disp(['Error. Can not calculate BER, because of different array size. length(EstSignal_b) = ',num2str(length(EstSignal_b)), ',  length(signalInf_b) = ', num2str(length(signalInf_b))]);
-    return;
-end
-
-% BER = abs(EstSignal_b - signalInf_b)/2;   %The bit error rate (BER)
-% disp(['BER = ',num2str(mean(BER))]); 
-% disp(['Number of bit errors= ',num2str(sum(BER))]); 
-% %****bit error calculation stop*******
+[est_signal_b, signal_contell, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, n_inf_bits, period, signalInf_b);
+calc_snr(z, length(SignBarkerB1Long), index_a, index_b);
 
 %write file start
-%[errmsg] = signal2file('output\output.txt', EstSignal_b);
-[errmsg] = signal2file(strcat('output\',filename), EstSignal_b);
-%[errmsg] = signal2file(strcat('output\',char(datetime),'.txt'), EstSignal_b);
+%[errmsg] = signal2file('output\output.txt', est_signal_b);
+[errmsg] = signal2file(strcat('output\',filename), est_signal_b);
+%[errmsg] = signal2file(strcat('output\',char(datetime),'.txt'), est_signal_b);
 if length(errmsg) ~= 0
     disp('signal2file error');
     disp(errmsg);
