@@ -38,8 +38,9 @@ end
 %Fs - Sampling rate in Hz. Valid values depend on the specific audio hardware installed. Typical values supported by most sound cards are 8000, 11025, 22050, 44100, 48000, and 96000 Hz.
 
 %carrier signal forming(start)
-%Fs = 96000;     %sample rate
-%F = Fs/30;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
+% Fs = 96000;     %sample rate
+% F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
+
 Fs = 22050;     %sample rate
 F = Fs/7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
@@ -119,7 +120,6 @@ u = u/std(u);
 % signal_noise = randn(length(u),1)/SNR;
 % u = u + signal_noise;
 %air channel modeling (stop)
-
 
 x1 = 0:2*pi/100:kt*2*pi;
 x2 = 0:F*Td:kt*2*pi;
@@ -233,15 +233,17 @@ title('PSD of equalized z');
 
 [EstSignal_b, SignalContell, indexA, indexB] = calc_ook_receiver_new(z_new, Samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, nInfBits, period, signalInf_b);
 
-indexA = indexA-length(SignBarkerB1Long);
-indexB = indexB+length(SignBarkerB1Long);
-if (indexA-4 > 1) && (indexB > 1) && (indexA < length(z)) && (indexB < length(z))  %SNR estimation 
-    s = std(z(indexA:indexB));
-    n = std(z(1:indexA-4));
-    SNR_estimated = s/n;
-    disp(['SNR estimated = ',num2str(round(SNR_estimated))]);
-    disp(['SNR estimated = ',num2str(round(10*log10(SNR_estimated))), ' [dB]']);
-end
+calc_snr(z, length(SignBarkerB1Long), indexA, indexB);
+
+% indexA = indexA-length(SignBarkerB1Long);
+% indexB = indexB+length(SignBarkerB1Long);
+% if (indexA-4 > 1) && (indexB > 1) && (indexA < length(z)) && (indexB < length(z))  %SNR estimation 
+%     s = std(z(indexA:indexB));
+%     n = std(z(1:indexA-4));
+%     SNR_estimated = s/n;
+%     disp(['SNR estimated = ', num2str(round(SNR_estimated))]);
+%     disp(['SNR estimated = ', num2str(round(10 * log10(SNR_estimated))), ' [dB]']);
+% end
 
 %****bit error calculation start*******
 %The bit error rate (BER) is the number of bit errors per unit time. The bit error ratio (also BER) is the number of bit errors divided by the total number of transferred bits during a studied time interval. BER is a unitless performance measure, often expressed as a percentage.
