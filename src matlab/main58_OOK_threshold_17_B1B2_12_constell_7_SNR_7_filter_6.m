@@ -52,16 +52,16 @@ Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
 
 %*****Barker codes set generation (start)*****
-nSignBarkerB1 = 75;   % quantity of Barker codes in a set.
-nSignBarkerB2 = 75;   % quantity of Barker codes in a set.
-SignBarkerOneB1 = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; % Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
-SignBarkerOneB2 = [1 1 1 -1 -1 -1 1 -1 -1 1 -1]'; % Barker code N=11. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems.
-SignBarkerB1 = GetPeriodicBarkerCode(SignBarkerOneB1, nSignBarkerB1);
-SignBarkerB2 = GetPeriodicBarkerCode(SignBarkerOneB2, nSignBarkerB2);
+n_sign_barker_b1 = 75;   % quantity of Barker codes in a set.
+n_sign_barker_b2 = 75;   % quantity of Barker codes in a set.
+sign_barker_one_b1 = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; % Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
+sign_barker_one_b2 = [1 1 1 -1 -1 -1 1 -1 -1 1 -1]'; % Barker code N=11. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems.
+sign_barker_b1 = GetPeriodicBarkerCode(sign_barker_one_b1, n_sign_barker_b1);
+sign_barker_b2 = GetPeriodicBarkerCode(sign_barker_one_b2, n_sign_barker_b2);
 %*****Barker codes set generation (stop)*****
 
 n = fix(n_inf_bits / period);
-n_total_bits = delay + 2 * length(SignBarkerB1) + n * length(SignBarkerB2) + n_inf_bits; % total bits plus delay
+n_total_bits = delay + 2 * length(sign_barker_b1) + n * length(sign_barker_b2) + n_inf_bits; % total bits plus delay
 %n_total_bits = delay + 2*length(SignBarker) + n_inf_bits;
 
 show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits);
@@ -80,8 +80,8 @@ signalInf_b = 2 * randi([0, 1], n_inf_bits, 1) - 1; % information signal = noise
 
 % adding sync marks (start)
 %signal  = InsertSyncB1(signalInf_b,SignBarker, delay);
-signal          = InsertSyncB2(signalInf_b, SignBarkerB2, period);
-signal          = InsertSyncB1(signal, SignBarkerB1, delay);
+signal          = InsertSyncB2(signalInf_b, sign_barker_b2, period);
+signal          = InsertSyncB1(signal, sign_barker_b1, delay);
 % adding sync marks (stop)
 
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
@@ -140,7 +140,7 @@ sound(u, Fs, nBits);         %modulated signal
 % %SignBarker = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13
 %tt = 1+kt*(2*length(SignBarker) + n_inf_bits)/F;   %common transmit time
 n = fix(n_inf_bits / period);
-tt = 1 + kt * (2 * length(SignBarkerB1) + n * length(SignBarkerB2) + n_inf_bits)/F;   %common transmit time
+tt = 1 + kt * (2 * length(sign_barker_b1) + n * length(sign_barker_b2) + n_inf_bits)/F;   %common transmit time
 
 nBits=24;
 samples = kt*Fs/F;       %!!!! number of samples per one symbol
@@ -161,8 +161,8 @@ disp('End of Recording.');
 z = getaudiodata(recObj)';      %received signal
 %z = u';
 
-SignBarkerB1Long = Short2Long(SignBarkerB1, samples);
-SignBarkerB2Long = Short2Long(SignBarkerB2, samples);
+sign_barker_b1Long = Short2Long(sign_barker_b1, samples);
+sign_barker_b2Long = Short2Long(sign_barker_b2, samples);
 
 plot_time(z, Fs, 'sec', 'recorded signal z')
 plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
@@ -170,19 +170,19 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[est_signal_b, signal_contell, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, n_inf_bits, period, signalInf_b);
+[est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1Long, sign_barker_b2Long, n_inf_bits, period, signalInf_b);
 
 % equalization start()
-sign_x = SignalLongFilter(SignBarkerB1Long, samples, Fs);     %filtering
-%sign_x = SignBarkerB1Long;
+sign_x = SignalLongFilter(sign_barker_b1Long, samples, Fs);     %filtering
+%sign_x = sign_barker_b1Long;
 x = 0:F*Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 sign_x = sign_x.*sin(x(1:length(sign_x)))';
-z_new = equalizer_first(sign_x, z, 3 * nSignBarkerB1, index_a);
+z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, index_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalization stop()
 
-[est_signal_b, signal_contell, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, n_inf_bits, period, signalInf_b);
-calc_snr(z, length(SignBarkerB1Long), index_a, index_b);
+[est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1Long, sign_barker_b2Long, n_inf_bits, period, signalInf_b);
+calc_snr(z, length(sign_barker_b1Long), index_a, index_b);
 
 %write file start
 %[errmsg] = signal2file('output\output.txt', est_signal_b);

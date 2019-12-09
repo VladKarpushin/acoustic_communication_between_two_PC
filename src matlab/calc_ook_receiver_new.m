@@ -1,6 +1,6 @@
 % 2019-11-17
 % noncoherent reception, information signal estimation, BER calculation
-function [est_signal_b, signal_contell, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, n_inf_bits, period, signal_inf_b)
+function [est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, SignBarkerB1Long, SignBarkerB2Long, n_inf_bits, period, signal_inf_b)
 
 %****noncoherent reception start *******
 signal_complex = CalcNoncoherentReceptionNew(z, samples, F, Fs);            % signal_complex - complex signal
@@ -32,7 +32,7 @@ disp(['max_sign_sync-min_sign_sync = ', num2str(m)]);
 disp(['BER = ', num2str(BER(i))]);
 [signal_complex] = CalcNoncoherentReceptionNew(z, samples, F, Fs);      %signal_complex - complex signal
 corr_integral = real(signal_complex).^2 + imag(signal_complex).^2;       %detected amplitude (amplitude envelope quadrature)
-[est_signal_b a a a a a signal_contell index_a index_b] = CalcSignalEstimationNew4B1B2(corr_integral, threshold(i), SignBarkerB1Long, SignBarkerB2Long, samples, n_inf_bits, period, signal_complex); % this function estimates information bits (information signal)
+[est_signal_b a a a a a signal_constel index_a index_b] = CalcSignalEstimationNew4B1B2(corr_integral, threshold(i), SignBarkerB1Long, SignBarkerB2Long, samples, n_inf_bits, period, signal_complex); % this function estimates information bits (information signal)
 thr = threshold(i);
 
 plot_time(corr_integral, Fs, 'sec', 'corr integral')
@@ -43,8 +43,8 @@ figure, plot(x, corr_integral, 'r', x, z, 'b');
 xlabel('sec');
 title('SignAmp (r) and z (b)');
 
-c = linspace(1, 10, length(signal_contell));                         % from black to yellow
-figure, scatter(real(signal_contell), imag(signal_contell), [], c);     % create a scatter plot and vary the circle color.
+c = linspace(1, 10, length(signal_constel));                         % from black to yellow
+figure, scatter(real(signal_constel), imag(signal_constel), [], c);     % create a scatter plot and vary the circle color.
 hold on;
 theta = linspace(0, 2 * pi);
 r = sqrt(thr);
