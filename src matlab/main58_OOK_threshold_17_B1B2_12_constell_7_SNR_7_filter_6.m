@@ -19,12 +19,12 @@
 %2019-11-16 start to equalizer development
 
 tic
-close all,clc,clear all;
+close all, clc, clear all;
 
 %read a file start
-filename = 'ones_1KB.m';
+file_name = 'ones_1KB.m';
 %[signal_inf_bits errmsg] = file2signal('input\ones_1KB.m');
-[signal_inf_bits errmsg] = file2signal(strcat('..\input\', filename));
+[signal_inf_bits errmsg] = file2signal(strcat('..\input\', file_name));
 if length(errmsg) ~= 0
     disp('file2signal error');
     disp(errmsg);
@@ -186,7 +186,7 @@ calc_snr(z, length(sign_barker_b1_long), index_a, index_b);
 
 %write file start
 %[errmsg] = signal2file('output\output.txt', est_signal_b);
-[errmsg] = signal2file(strcat('output\',filename), est_signal_b);
+[errmsg] = signal2file(strcat('output\', file_name), est_signal_b);
 %[errmsg] = signal2file(strcat('output\',char(datetime),'.txt'), est_signal_b);
 if length(errmsg) ~= 0
     disp('signal2file error');
