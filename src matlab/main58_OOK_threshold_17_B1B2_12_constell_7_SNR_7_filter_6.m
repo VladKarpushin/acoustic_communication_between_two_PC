@@ -23,8 +23,8 @@ close all,clc,clear all;
 
 %read a file start
 filename = 'ones_1KB.m';
-%[signalInf_b errmsg] = file2signal('input\ones_1KB.m');
-[signalInf_b errmsg] = file2signal(strcat('..\input\', filename));
+%[signal_inf_bits errmsg] = file2signal('input\ones_1KB.m');
+[signal_inf_bits errmsg] = file2signal(strcat('..\input\', filename));
 if length(errmsg) ~= 0
     disp('file2signal error');
     disp(errmsg);
@@ -47,7 +47,7 @@ kt = 2;             % coefficient of duration of one symbol, kt/F = duration of 
 period = 1024 * 4 * 1;          % packet size
 n_inf_bits = 1024 * 4 * 2;      % number of information bits
 
-%n_inf_bits = length(signalInf_b);
+%n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
 
@@ -68,19 +68,19 @@ show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits);
 %carrier signal forming(stop)
 
 % modulation(start)
-signalInf_b = 2 * randi([0, 1], n_inf_bits, 1) - 1; % information signal = noise
+signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % information signal = noise
 
-% signalInf_b = -1*ones(n_inf_bits,1);       % information signal = [1 -1 1 -1 1 -1]
+% signal_inf_bits = -1*ones(n_inf_bits,1);       % information signal = [1 -1 1 -1 1 -1]
 % n=1:2:n_inf_bits;
-% signalInf_b(n) = 1;
+% signal_inf_bits(n) = 1;
 % 
-% signalInf_b = ones(n_inf_bits,1);       %information signal = [-1 -1 -1 1 1 1]
-% signalInf_b(1:fix(n_inf_bits/2)) = -1;
+% signal_inf_bits = ones(n_inf_bits,1);       %information signal = [-1 -1 -1 1 1 1]
+% signal_inf_bits(1:fix(n_inf_bits/2)) = -1;
 
 
 % adding sync marks (start)
-%signal  = InsertSyncB1(signalInf_b,SignBarker, delay);
-signal          = InsertSyncB2(signalInf_b, sign_barker_b2, period);
+%signal  = InsertSyncB1(signal_inf_bits,SignBarker, delay);
+signal          = InsertSyncB2(signal_inf_bits, sign_barker_b2, period);
 signal          = InsertSyncB1(signal, sign_barker_b1, delay);
 % adding sync marks (stop)
 
@@ -94,11 +94,11 @@ end
 %x = linspace(0,kt*n_total_bits*2*pi-(F*Td),n_total_bits*samples);
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 
-SignalLong = (Short2Long(signal, samples) + 1) / 2;     % OOK
-%SignalLong = (Short2Long(signal, samples));            % BPSK
-SignalLong(1:delay * samples) = 0;
-SignalLong = SignalLongFilter(SignalLong, samples, Fs);     % filtering
-u = SignalLong.*sin(x)';
+signal_long = (Short2Long(signal, samples) + 1) / 2;     % OOK
+%signal_long = (Short2Long(signal, samples));            % BPSK
+signal_long(1:delay * samples) = 0;
+signal_long = SignalLongFilter(signal_long, samples, Fs);     % filtering
+u = signal_long.*sin(x)';
 
 %signal(1:5)
 % modulation(stop)
@@ -161,8 +161,8 @@ disp('End of Recording.');
 z = getaudiodata(recObj)';      %received signal
 %z = u';
 
-sign_barker_b1Long = Short2Long(sign_barker_b1, samples);
-sign_barker_b2Long = Short2Long(sign_barker_b2, samples);
+sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
+sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
 
 plot_time(z, Fs, 'sec', 'recorded signal z')
 plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
@@ -170,19 +170,19 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1Long, sign_barker_b2Long, n_inf_bits, period, signalInf_b);
+[est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
 
 % equalization start()
-sign_x = SignalLongFilter(sign_barker_b1Long, samples, Fs);     %filtering
-%sign_x = sign_barker_b1Long;
+sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
+%sign_x = sign_barker_b1_long;
 x = 0:F*Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 sign_x = sign_x.*sin(x(1:length(sign_x)))';
 z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, index_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalization stop()
 
-[est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1Long, sign_barker_b2Long, n_inf_bits, period, signalInf_b);
-calc_snr(z, length(sign_barker_b1Long), index_a, index_b);
+[est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
+calc_snr(z, length(sign_barker_b1_long), index_a, index_b);
 
 %write file start
 %[errmsg] = signal2file('output\output.txt', est_signal_b);
