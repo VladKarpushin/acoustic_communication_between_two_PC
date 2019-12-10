@@ -145,7 +145,7 @@ tt = 1 + kt * (2 * length(sign_barker_b1) + n * length(sign_barker_b2) + n_inf_b
 nBits=24;
 samples = kt*Fs/F;       %!!!! number of samples per one symbol
 if abs(samples - fix(samples)) > 0                  %check Freq assignment error
-    disp(['Error. Freq assignment error. samples = kt*Fs/F = ',num2str(samples)]);
+    disp(['Error. Freq assignment error. samples = kt*Fs/F = ', num2str(samples)]);
     return;
 end
 
