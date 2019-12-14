@@ -90,7 +90,6 @@ if abs(samples - fix(samples)) > 0                  % check Freq assignment erro
     return;
 end
 
-
 %x = linspace(0,kt*n_total_bits*2*pi-(F*Td),n_total_bits*samples);
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 
