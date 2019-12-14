@@ -90,7 +90,7 @@ x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 %signal_long = (Short2Long(signal, samples)+1)/2;     %OOK
 signal_long = (Short2Long(signal, samples));        %BPSK
 signal_long(1:delay * samples) = 0;
-%signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
+signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 
 u = signal_long.*sin(x)';
 
@@ -98,7 +98,7 @@ u = signal_long.*sin(x)';
 
 
 %air channel modeling (start)
-u = u/std(u);
+u = u / std(u);
 % signal_noise = randn(length(u),1)/SNR;
 % u = u + signal_noise;
 %air channel modeling (stop)
@@ -200,8 +200,8 @@ disp(['std_sign_sync = ', num2str(std_sign_sync(i))]);
 [est_signal_b max_sign_sync min_sign_sync Err delta std_sign_sync signal_contel index_a index_b] = CalcSignalEstimationNew4(corr_integral,threshold, sign_barker_long, samples, signal_complex); %This function estimates information bits (information signal)
 
 % equalizer start()
-%sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering
-sign_x = sign_barker_long;
+sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering
+%sign_x = sign_barker_long;
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 sign_x = sign_x.*sin(x(1:length(sign_x)))';
 z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, index_a);
