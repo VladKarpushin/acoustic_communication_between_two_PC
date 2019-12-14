@@ -141,8 +141,8 @@ sound(u, Fs, nBits);         %modulated signal
 n = fix(n_inf_bits / period);
 tt = 1 + kt * (2 * length(sign_barker_b1) + n * length(sign_barker_b2) + n_inf_bits)/F;   %common transmit time
 
-nBits=24;
-samples = kt*Fs/F;       %!!!! number of samples per one symbol
+nBits = 24;
+samples = kt * Fs / F;       %!!!! number of samples per one symbol
 if abs(samples - fix(samples)) > 0                  %check Freq assignment error
     disp(['Error. Freq assignment error. samples = kt*Fs/F = ', num2str(samples)]);
     return;
@@ -166,7 +166,7 @@ sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
 plot_time(z, Fs, 'sec', 'recorded signal z')
 plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 
-figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
+figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
 [est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
@@ -174,7 +174,7 @@ title('Received signal spectrogram');
 % equalization start()
 sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
 %sign_x = sign_barker_b1_long;
-x = 0:F*Td:(kt * n_total_bits * 2 * pi) - (F * Td);
+x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 sign_x = sign_x.*sin(x(1:length(sign_x)))';
 z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, index_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');

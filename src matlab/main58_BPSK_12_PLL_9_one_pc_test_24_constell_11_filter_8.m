@@ -15,7 +15,7 @@
 %2016-07-24 std(VKF) output, improved PLL criteria
 %2016-07-27 added comments
 %2016-08-13 added GetPeriodicBarkerCode, InsertSyncB2 and InsertSyncB1
-%2016-08-21 added SignBarkerLong = Short2Long(sign_barker, samples);
+%2016-08-21 added sign_barker_long = Short2Long(sign_barker, samples);
 %2016-08-25 added Long2Short
 %2016-11-05 added code for signal constellation
 %2016-11-06 added color for phase
@@ -126,148 +126,106 @@ sound(u, Fs, nBits);         %modulated signal
 % F = 5*Fs/100;  %frequency of signal, 200<F<Fs/2, [Hz]. even(1*Fs/100, 2*Fs/100, 4*Fs/100). F = 2(and 4)*Fs/100 - optimum
 % kF = 4;         %f1 = kF*f0, kF=2(and 8) - optimum
 % n_inf_bits = 1*8*1024;   %number of information bits
-tt = 1+kt*(2*length(sign_barker) + n_inf_bits)/F;   %common transmit time
-nBits=24;
-samples = kt*Fs/F;       %!!!! number of samples per one symbol
+tt = 1 + kt * (2 * length(sign_barker) + n_inf_bits) / F;   %common transmit time
+nBits = 24;
+samples = kt * Fs / F;       %!!!! number of samples per one symbol
 if abs(samples - fix(samples)) > 0                  %check Freq assignment error
-    disp(['Error. Freq assignment error. samples = kt*Fs/F = ',num2str(samples)]);
+    disp(['Error. Freq assignment error. samples = kt*Fs/F = ', num2str(samples)]);
     return;
 end
 
 recObj = audiorecorder(Fs, nBits, 1);
 get(recObj);
+% Record your voice for 5 seconds.
+%recObj = audiorecorder;
 disp('Start recording.');
-recordblocking(recObj, tt);
+recordblocking(recObj, tt+2);
 disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
 %z = u';
 
-% SignBarkerLong = ones(length(sign_barker)*samples,1);
-% for n = 1:length(sign_barker)
-%     iA = 1 + (n-1)*samples;
-%     iB = iA+samples-1;
-%     if sign_barker(n) == -1
-%         SignBarkerLong(iA:iB) = -1;
-%     end
-% end
+sign_barker_long = Short2Long(sign_barker, samples);
 
-SignBarkerLong = Short2Long(sign_barker, samples);
+plot_time(z, Fs, 'sec', 'recorded signal z')
+plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 
-% Plot the waveform.
-x = 1:length(z);
-x=x/Fs;
-figure,plot(x,z);
-xlabel('sec');
-title('recorded signal z');
-
-Z_PSD = fft(z).*conj(fft(z));   %power spectrum density
-% x = 1:floor(length(Z_PSD)/2);
-% figure,plot(x/tt,Z_PSD(x));
-Z_PSD(length(Z_PSD)) = 0;
-Z_PSD(1) = 0;
-x = 1:length(Z_PSD);
-x = x/length(Z_PSD)*Fs;
-figure,plot(x,Z_PSD);
-xlabel('Hz')
-title('PSD of reveived signal z');
-
-figure, spectrogram(z,400,100,[],Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
+figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-
 %*******PLL start ******
-n = 2*ceil(samples/4);          %number of PLL iterations n = Pi/4
-PLL_offset_n = 0:n-1;           %PLL_offset_n - %sin offset (used for PLL). It is equal to PLL_offset_n  = ceil(samples/4). PLL_offset_n = 0 means there is not offset
+n = 2 * ceil(samples / 4);          %number of PLL iterations n = Pi/4
+PLL_offset_n = 0:n - 1;           %PLL_offset_n - %sin offset (used for PLL). It is equal to PLL_offset_n  = ceil(samples/4). PLL_offset_n = 0 means there is not offset
 
-MaxAbsCorrIntegral   = (-2)*ones(n,1);   %max(CCF received signal and sin wave), max(correlation integral)
-BER             = (-2)*ones(n,1);   %BER is bit error rate
-MaxSignSync     = (-2)*ones(n,1);   %MaxSignSync is max(CCF)
-MinSignSync     = (-2)*ones(n,1);   %MinSignSync is min(CCF)
-delta           = (-2)*ones(n,1);   %delta is difference between index(MinSignSync) and index(MaxSignSync)
-StdSignSync     = (-2)*ones(n,1);   %StdSignSync is std(CCF)
+max_abs_corr_integral   = (-2) * ones(n, 1);   %max(CCF received signal and sin wave), max(correlation integral)
+BER                     = (-2) * ones(n, 1);   %BER is bit error rate
+max_sign_sync           = (-2) * ones(n, 1);   %max_sign_sync is max(CCF)
+min_sign_sync           = (-2) * ones(n, 1);   %min_sign_sync is min(CCF)
+delta                   = (-2) * ones(n, 1);   %delta is difference between index(min_sign_sync) and index(max_sign_sync)
+std_sign_sync           = (-2) * ones(n, 1);   %std_sign_sync is std(CCF)
 threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
 for i = 1:n
-    [CorrIntegral tmp] = CalcCoherentReceptionNew3(z,samples,F,Fs,PLL_offset_n(i));   %coherent reception
-    MaxAbsCorrIntegral(i) = max(abs(CorrIntegral));
-    [EstSignal_b MaxSignSync(i) MinSignSync(i) Err delta(i) StdSignSync(i)] = CalcSignalEstimationNew4(CorrIntegral,threshold, SignBarkerLong, samples, tmp); %This function estimates information bits (information signal)
-    if length(EstSignal_b) == length(signal_inf_bits)                  %check size
-        BER(i) = mean(abs(EstSignal_b - signal_inf_bits)/2);   %The bit error rate (BER) calculation
+    [corr_integral tmp] = CalcCoherentReceptionNew3(z, samples, F, Fs, PLL_offset_n(i));   %coherent reception
+    max_abs_corr_integral(i) = max(abs(corr_integral));
+    [est_signal_b max_sign_sync(i) min_sign_sync(i) Err delta(i) std_sign_sync(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
+    if length(est_signal_b) == length(signal_inf_bits)                  %check size
+        BER(i) = mean(abs(est_signal_b - signal_inf_bits) / 2);   %The bit error rate (BER) calculation
     else
-        disp(['Error. Can not calculate BER, because of different array size. length(EstSignal_b) = ',num2str(length(EstSignal_b)), ',  length(signal_inf_bits) = ', num2str(length(signal_inf_bits))]);
+        disp(['Error. Can not calculate BER, because of different array size. length(est_signal_b) = ', num2str(length(est_signal_b)), ',  length(signal_inf_bits) = ', num2str(length(signal_inf_bits))]);
     end
 
 end
-ErrSyst = n_inf_bits*samples - delta; %systematic error between n_inf_bits*samples and delta
-PLL_offset_vs_BER = [PLL_offset_n' MaxAbsCorrIntegral MaxSignSync MinSignSync MaxSignSync-MinSignSync BER delta ErrSyst StdSignSync];
+ErrSyst = n_inf_bits * samples - delta; %systematic error between n_inf_bits*samples and delta
+PLL_offset_vs_BER = [PLL_offset_n' max_abs_corr_integral max_sign_sync min_sign_sync max_sign_sync-min_sign_sync BER delta ErrSyst std_sign_sync];
 %*******PLL stop ******
 
 %*******output result (start)*********
 m = -2;
 i = -2;
-[m i] = max(MaxSignSync-MinSignSync);   %PLL criterion1: max(CCF) - min(CCF) = max
-if abs(ErrSyst(i))>samples/2      
+[m i] = max(max_sign_sync - min_sign_sync);   %PLL criterion1: max(CCF) - min(CCF) = max
+if abs(ErrSyst(i)) > samples / 2      
     [m i] = min(abs(ErrSyst));          %PLL criterion2: systematic error = min
 end
 
-disp(['PLL_offset_n = ',num2str(PLL_offset_n(i))]);
-disp(['BER = ',num2str(BER(i))]);
-disp(['MaxSignSync - MinSignSync = ',num2str(MaxSignSync(i) - MinSignSync(i))]);
-disp(['delta = ',num2str(delta(i))]);
-disp(['ErrSyst (systematic error) = ',num2str(ErrSyst(i))]);
-disp(['StdSignSync = ',num2str(StdSignSync(i))]);
+disp(['PLL_offset_n = ', num2str(PLL_offset_n(i))]);
+disp(['BER = ', num2str(BER(i))]);
+disp(['max_sign_sync - min_sign_sync = ', num2str(max_sign_sync(i) - min_sign_sync(i))]);
+disp(['delta = ', num2str(delta(i))]);
+disp(['ErrSyst (systematic error) = ', num2str(ErrSyst(i))]);
+disp(['std_sign_sync = ', num2str(std_sign_sync(i))]);
 
-[CorrIntegral SignalComplex] = CalcCoherentReceptionNew3(z,samples,F,Fs,PLL_offset_n(i));   %coherent reception
-[EstSignal_b MaxSignSync MinSignSync Err delta StdSignSync SignalContell indexA indexB] = CalcSignalEstimationNew4(CorrIntegral,threshold, SignBarkerLong, samples, SignalComplex); %This function estimates information bits (information signal)
+[corr_integral signal_complex] = CalcCoherentReceptionNew3(z, samples, F, Fs, PLL_offset_n(i));   %coherent reception
+[est_signal_b max_sign_sync min_sign_sync Err delta std_sign_sync signal_contel index_a index_b] = CalcSignalEstimationNew4(corr_integral,threshold, sign_barker_long, samples, signal_complex); %This function estimates information bits (information signal)
 
 % equalizer start()
-%sign_x = SignalLongFilter(SignBarkerLong, samples, Fs);     %filtering
-sign_x = SignBarkerLong;
-x = 0:F*Td:(kt*n_total_bits*2*pi)-(F*Td);
+%sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering
+sign_x = sign_barker_long;
+x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 sign_x = sign_x.*sin(x(1:length(sign_x)))';
-
-z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, indexA);
-
-Z_new_PSD = fft(z_new).*conj(fft(z_new));   %power spectrum density
-Z_new_PSD(1) = 0;
-x = 1:length(z_new);
-x = x/length(z_new)*Fs;
-figure, plot(x, Z_new_PSD);
-xlabel('Hz')
-title('PSD of equalized z');
-
-[CorrIntegral SignalComplex] = CalcCoherentReceptionNew3(z_new,samples,F,Fs,PLL_offset_n(i));   %coherent reception
-[EstSignal_b MaxSignSync MinSignSync Err delta StdSignSync SignalContell indexA indexB] = CalcSignalEstimationNew4(CorrIntegral,threshold, SignBarkerLong, samples, SignalComplex); %This function estimates information bits (information signal)
-BER_eq = mean(abs(EstSignal_b - signal_inf_bits)/2);   %The bit error rate (BER) calculation
-disp(['BER_eq = ', num2str(BER_eq)]);
+z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, index_a);
+plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalizer stop()
 
-
-indexA = indexA-length(SignBarkerLong);
-indexB = indexB+length(SignBarkerLong);
-if (indexA-4 > 1) && (indexB > 1) && (indexA < length(z)) && (indexB < length(z))  %SNR estimation 
-    s = std(z(indexA:indexB));
-    n = std(z(1:indexA-4));
-    SNR_estimated = s/n;
-    disp(['SNR estimated = ',num2str(round(SNR_estimated))]);
-    disp(['SNR estimated = ',num2str(round(10*log10(SNR_estimated))), ' [dB]']);
-end
+[corr_integral signal_complex] = CalcCoherentReceptionNew3(z_new,samples,F,Fs,PLL_offset_n(i));   %coherent reception
+[est_signal_b max_sign_sync min_sign_sync Err delta std_sign_sync signal_contel index_a index_b] = CalcSignalEstimationNew4(corr_integral,threshold, sign_barker_long, samples, signal_complex); %This function estimates information bits (information signal)
+BER_eq = mean(abs(est_signal_b - signal_inf_bits)/2);   %The bit error rate (BER) calculation
+disp(['BER_eq = ', num2str(BER_eq)]);
 
 x = 1:length(z);
 %x=x/Fs;
-figure,plot(x,CorrIntegral);
+figure,plot(x,corr_integral);
 xlabel('sec');
-title('CorrIntegral');
+title('corr_integral');
 
-figure,plot(x,CorrIntegral,'r',x,z,'b');
+figure,plot(x,corr_integral,'r',x,z,'b');
 xlabel('sec');
-title('CorrIntegral (r) and z (b)');
+title('corr_integral (r) and z (b)');
 
-c = linspace(1,10,length(SignalContell));                   %from black to yellow
-figure,scatter(real(SignalContell),imag(SignalContell),[],c);   %Create a scatter plot and vary the circle color.
-%figure,scatter(real(SignalContell),imag(SignalContell),25,c,'filled');
+c = linspace(1,10,length(signal_contel));                   %from black to yellow
+figure,scatter(real(signal_contel),imag(signal_contel),[],c);   %Create a scatter plot and vary the circle color.
+%figure,scatter(real(signal_contel),imag(signal_contel),25,c,'filled');
 ylim(xlim);
 xlabel('In Phase');
 ylabel('Quadrature');
@@ -276,22 +234,24 @@ title('Signal Constellation');
 
 %****bit error calculation start*******
 %The bit error rate (BER) is the number of bit errors per unit time. The bit error ratio (also BER) is the number of bit errors divided by the total number of transferred bits during a studied time interval. BER is a unitless performance measure, often expressed as a percentage.
-% EstSignal_b
+% est_signal_b
 % signal_inf_bits
-% if length(EstSignal_b) ~= length(signal_inf_bits)                  %check Freq assignment error
-%     disp(['Error. Can not calculate BER, because of different array size. length(EstSignal_b) = ',num2str(length(EstSignal_b)), ',  length(signal_inf_bits) = ', num2str(length(signal_inf_bits))]);
+% if length(est_signal_b) ~= length(signal_inf_bits)                  %check Freq assignment error
+%     disp(['Error. Can not calculate BER, because of different array size. length(est_signal_b) = ',num2str(length(est_signal_b)), ',  length(signal_inf_bits) = ', num2str(length(signal_inf_bits))]);
 %     return;
 % end
 % 
-% BER = abs(EstSignal_b - signal_inf_bits)/2;   %The bit error rate (BER)
+% BER = abs(est_signal_b - signal_inf_bits)/2;   %The bit error rate (BER)
 % disp(['BER = ',num2str(mean(BER))]); 
 % disp(['Number of bit errors= ',num2str(sum(BER))]); 
 % %****bit error calculation stop*******
 % 
 
+calc_snr(z, length(sign_barker_long), index_a, index_b);
+
 %write file (start)
-[errmsg] = signal2file('output\output.txt', EstSignal_b);
-%[errmsg] = signal2file(strcat('output\',char(datetime),'.txt'), EstSignal_b);
+[errmsg] = signal2file('output\output.txt', est_signal_b);
+%[errmsg] = signal2file(strcat('output\',char(datetime),'.txt'), est_signal_b);
 if length(errmsg) ~= 0
     disp('signal2file error');
     disp(errmsg);
