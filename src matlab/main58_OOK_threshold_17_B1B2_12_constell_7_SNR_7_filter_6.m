@@ -68,7 +68,7 @@ show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits);
 %carrier signal forming(stop)
 
 % modulation(start)
-signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % information signal = noise
+signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % model of information signal is noise
 
 % signal_inf_bits = -1*ones(n_inf_bits,1);       % information signal = [1 -1 1 -1 1 -1]
 % n=1:2:n_inf_bits;

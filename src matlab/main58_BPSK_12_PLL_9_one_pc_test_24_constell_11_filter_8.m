@@ -26,7 +26,7 @@
 %2017-01-02 added spectrogram
 %2019-11-04 start to equalizer development
 
-close all,clc,clear all;
+close all, clc, clear all;
 
 %read a file start
 %[signalInf_b errmsg] = file2signal('input\main13.m');
