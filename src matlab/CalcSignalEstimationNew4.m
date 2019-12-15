@@ -31,7 +31,7 @@ iA = 0;
 iB = 0;
 
 EstSignal = zeros(length(CorrIntegral),1);
-EstSignal = (2*(CorrIntegral > threshold))-1;    %resolver
+EstSignal = (2 * (CorrIntegral > threshold))-1;    %resolver
 % x = 1:length(EstSignal);
 % x=x/Fs;
 % figure,plot(x,EstSignal);

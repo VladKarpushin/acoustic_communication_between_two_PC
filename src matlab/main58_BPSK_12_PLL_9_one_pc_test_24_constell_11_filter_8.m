@@ -32,9 +32,9 @@ close all, clc, clear all;
 %[signal_inf_bits errmsg] = file2signal('input\main13.m');
 %[signal_inf_bits, errmsg] = file2signal('..\input\main13_2KB.m');
 filename = 'ones_1KB.m';
-[signal_inf_bits errmsg] = file2signal(strcat('..\input\',filename));
+[signal_inf_bits, errmsg] = file2signal(strcat('..\input\',filename));
 
-if length(errmsg) ~= 0
+if ~isempty(errmsg)
     disp('file2signal error');
     disp(errmsg);
     return;
@@ -154,7 +154,7 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[est_signal_b, index_a, index_b] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
+[~, index_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 % equalizer start()
 sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering
@@ -171,7 +171,7 @@ calc_snr(z, length(sign_barker_long), index_a, index_b);
 %write file (start)
 [errmsg] = signal2file('output\output.txt', est_signal_b);
 %[errmsg] = signal2file(strcat('output\',char(datetime),'.txt'), est_signal_b);
-if length(errmsg) ~= 0
+if ~isempty(errmsg)
     disp('signal2file error');
     disp(errmsg);
     return;

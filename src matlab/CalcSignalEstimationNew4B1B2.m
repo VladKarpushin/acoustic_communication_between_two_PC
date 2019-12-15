@@ -102,7 +102,7 @@ for i=1:n_packets
         tmp = SignSyncB2.*mask;
         [MaxSignSyncB2(i),ImaxSignSyncB2(i)] = max(SignSyncB2.*mask);  %largest element index
     else
-        disp(['Error. Wrong iB value) = ',num2str(iB)]);
+        %disp(['Error. Wrong iB value) = ',num2str(iB)]);
         Err = 1;
         return;
     end
@@ -122,7 +122,7 @@ if n_packets >0
         packet(:,1) = p;
         packet_SignalContell(:,1) = p_SignalContell;
     else
-        disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
+        %disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
         Err = 1;
         return;
     end
@@ -139,7 +139,7 @@ if n_packets >0
             packet(:,i) = p;
             packet_SignalContell(:,i) = p_SignalContell;
         else
-            disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
+            %disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
             Err = 1;
             return;
         end
@@ -166,7 +166,7 @@ if lenghth_packet_tail >0
         packet_tail = p;
         packet_tail_SignalContell = p_SignalContell;
     else
-        disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
+        %disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
         Err = 1;
         return;
     end
