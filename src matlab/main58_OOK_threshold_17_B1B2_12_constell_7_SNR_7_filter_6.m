@@ -169,7 +169,7 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
+[est_signal_b, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
 
 % equalization start()
 sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
@@ -180,7 +180,7 @@ z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, index_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalization stop()
 
-[est_signal_b, signal_constel, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
+[est_signal_b, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
 calc_snr(z, length(sign_barker_b1_long), index_a, index_b);
 
 %write file start
