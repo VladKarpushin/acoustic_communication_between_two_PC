@@ -92,6 +92,11 @@ signal_long = (Short2Long(signal, samples));        %BPSK
 signal_long(1:delay * samples) = 0;
 signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 
+% qpsk_part = 2 * randi([0, 1], length(signal), 1) - 1; % model of information signal is noise
+% qpsk_part = (Short2Long(qpsk_part, samples));        %BPSK
+% qpsk_part = SignalLongFilter(qpsk_part, samples, Fs);     %filtering
+%u = signal_long.*sin(x)' + qpsk_part.*cos(x)';
+
 u = signal_long.*sin(x)';
 
 %modulation(stop)
