@@ -10,9 +10,9 @@ corr_integral = real(signal_complex).^2 + imag(signal_complex).^2;          % de
 %****information signal estimation (start)*******
 threshold = 0:0.01:0.6;  %resolver threshold
 n = length(threshold);
-BER = (-2) * ones(n, 1);
-max_sign_sync = (-2) * ones(n, 1);
-min_sign_sync = (-2) * ones(n, 1);
+BER = -2 * ones(n, 1);
+max_sign_sync = -2 * ones(n, 1);
+min_sign_sync = -2 * ones(n, 1);
 
 for i = 1:n
     [est_signal_b, max_sign_sync(i), min_sign_sync(i), ~] = CalcSignalEstimationNew4B1B2(corr_integral,threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); %This function estimates information bits (information signal)

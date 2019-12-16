@@ -7,12 +7,12 @@ function [est_signal_b, index_a, index_b] = calc_bpsk_receiver(z, samples, F, Fs
 n = 2 * ceil(samples / 4);          %number of PLL iterations n = Pi/4
 PLL_offset_n = 0:n - 1;           %PLL_offset_n - %sin offset (used for PLL). It is equal to PLL_offset_n  = ceil(samples/4). PLL_offset_n = 0 means there is not offset
 
-max_abs_corr_integral   = (-2) * ones(n, 1);   %max(CCF received signal and sin wave), max(correlation integral)
-BER                     = (-2) * ones(n, 1);   %BER is bit error rate
-max_sign_sync           = (-2) * ones(n, 1);   %max_sign_sync is max(CCF)
-min_sign_sync           = (-2) * ones(n, 1);   %min_sign_sync is min(CCF)
-delta                   = (-2) * ones(n, 1);   %delta is difference between index(min_sign_sync) and index(max_sign_sync)
-std_sign_sync           = (-2) * ones(n, 1);   %std_sign_sync is std(CCF)
+max_abs_corr_integral   = -2 * ones(n, 1);   %max(CCF received signal and sin wave), max(correlation integral)
+BER                     = -2 * ones(n, 1);   %BER is bit error rate
+max_sign_sync           = -2 * ones(n, 1);   %max_sign_sync is max(CCF)
+min_sign_sync           = -2 * ones(n, 1);   %min_sign_sync is min(CCF)
+delta                   = -2 * ones(n, 1);   %delta is difference between index(min_sign_sync) and index(max_sign_sync)
+std_sign_sync           = -2 * ones(n, 1);   %std_sign_sync is std(CCF)
 threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
 for i = 1:n
