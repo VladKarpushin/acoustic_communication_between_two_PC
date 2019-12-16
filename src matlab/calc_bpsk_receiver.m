@@ -17,8 +17,8 @@ threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
 for i = 1:n
     [corr_integral, tmp] = CalcCoherentReceptionNew3(z, samples, F, Fs, PLL_offset_n(i));   %coherent reception
-    max_abs_corr_integral(i) = max(abs(corr_integral));
     [est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
+    max_abs_corr_integral(i) = max(abs(corr_integral));
     if length(est_signal_b) == length(signal_inf_bits)                  %check size
         BER(i) = mean(abs(est_signal_b - signal_inf_bits) / 2);   %The bit error rate (BER) calculation
     else

@@ -17,7 +17,7 @@ min_sign_sync = (-2) * ones(n, 1);
 for i = 1:n
     [est_signal_b, max_sign_sync(i), min_sign_sync(i), ~] = CalcSignalEstimationNew4B1B2(corr_integral,threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); %This function estimates information bits (information signal)
     if length(est_signal_b) == n_inf_bits                  %check Freq assignment error
-        BER(i) = mean(abs(est_signal_b - signal_inf_b)/2);   %The bit error rate (BER)
+        BER(i) = mean(abs(est_signal_b - signal_inf_b) / 2);   %The bit error rate (BER)
     else
         disp(['Error. Can not calculate BER, because of different array size. length(est_signal_b) = ', num2str(length(est_signal_b)), ',  length(signal_inf_b) = ', num2str(length(signal_inf_b))]);
     end
