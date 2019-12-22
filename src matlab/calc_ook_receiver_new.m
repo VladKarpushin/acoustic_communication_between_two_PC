@@ -1,6 +1,6 @@
 % 2019-11-17
 % noncoherent reception, information signal estimation, BER calculation
-function [est_signal_b, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_b)
+function [est_signal_b, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits)
 
 %****noncoherent reception start *******
 signal_complex = CalcNoncoherentReceptionNew(z, samples, F, Fs);            % signal_complex - complex signal
@@ -16,11 +16,13 @@ min_sign_sync = -2 * ones(n, 1);
 
 for i = 1:n
     [est_signal_b, max_sign_sync(i), min_sign_sync(i), ~] = CalcSignalEstimationNew4B1B2(corr_integral,threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); %This function estimates information bits (information signal)
-    if length(est_signal_b) == n_inf_bits                  %check Freq assignment error
-        BER(i) = mean(abs(est_signal_b - signal_inf_b) / 2);   %The bit error rate (BER)
-    else
-        disp(['Error. Can not calculate BER, because of different array size. length(est_signal_b) = ', num2str(length(est_signal_b)), ',  length(signal_inf_b) = ', num2str(length(signal_inf_b))]);
-    end
+%     if length(est_signal_b) == n_inf_bits
+%     %if length(est_signal_b) == length(signal_inf_bits)
+%         BER(i) = mean(abs(est_signal_b - signal_inf_bits) / 2);   %The bit error rate (BER)
+%     else
+%         disp(['Error. Can not calculate BER, because of different array size. length(est_signal_b) = ', num2str(length(est_signal_b)), ',  length(signal_inf_bits) = ', num2str(length(signal_inf_bits))]);
+%     end
+    BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits);
 end
 %****information signal estimation (stop)*******
 

@@ -19,11 +19,13 @@ for i = 1:n
     [corr_integral, tmp] = CalcCoherentReceptionNew3(z, samples, F, Fs, PLL_offset_n(i));   %coherent reception
     [est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
     max_abs_corr_integral(i) = max(abs(corr_integral));
-    if length(est_signal_b) == length(signal_inf_bits)                  %check size
-        BER(i) = mean(abs(est_signal_b - signal_inf_bits) / 2);   %The bit error rate (BER) calculation
-    else
-        disp(['Error. Can not calculate BER, because of different array size. length(est_signal_b) = ', num2str(length(est_signal_b)), ',  length(signal_inf_bits) = ', num2str(length(signal_inf_bits))]);
-    end
+    %if length(est_signal_b) == length(signal_inf_bits)                  %check size
+%     if length(est_signal_b) == n_inf_bits
+%         BER(i) = mean(abs(est_signal_b - signal_inf_bits) / 2);   %The bit error rate (BER) calculation
+%     else
+%         disp(['Error. Can not calculate BER, because of different array size. length(est_signal_b) = ', num2str(length(est_signal_b)), ',  length(signal_inf_bits) = ', num2str(length(signal_inf_bits))]);
+%     end
+    BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits);
 
 end
 ErrSyst = n_inf_bits * samples - delta; %systematic error between n_inf_bits*samples and delta
