@@ -181,7 +181,7 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalization stop()
 
 [est_signal_b, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
-calc_snr(z, length(sign_barker_b1_long), index_a, index_b);
+calc_snr(z, length(sign_barker_b1_long), index_a, index_b, 0);
 
 %write file start
 %[errmsg] = signal2file('output\output.txt', est_signal_b);
