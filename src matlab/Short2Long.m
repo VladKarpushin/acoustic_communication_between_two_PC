@@ -7,11 +7,13 @@ function [SignLong] = Short2Long(SignShort, Samples)
 % Samples
 % output:
 % SignLong - long signal
-SignLong = ones(length(SignShort)*Samples,1);
+SignLong = zeros(length(SignShort) * Samples, 1);
 for n = 1:length(SignShort)
-    iA = 1 + (n-1)*Samples;
-    iB = iA+Samples-1;
+    iA = 1 + (n - 1) * Samples;
+    iB = iA + Samples - 1;
     if SignShort(n) == -1
         SignLong(iA:iB) = -1;
+    elseif SignShort(n) == 1
+        SignLong(iA:iB) = 1;        
     end
 end

@@ -91,7 +91,7 @@ x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 %x = linspace(0,kt*n_total_bits*2*pi-(F*Td),n_total_bits*samples);
 %signal_long = (Short2Long(signal, samples)+1)/2;     %OOK
 signal_long = (Short2Long(signal, samples));        %BPSK
-signal_long(1:delay * samples) = 0;
+%signal_long(1:delay * samples) = 0;
 signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 
 % qpsk_part = 2 * randi([0, 1], length(signal), 1) - 1; % model of information signal is noise
@@ -173,7 +173,7 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalizer stop()
 
 [est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
-calc_snr(z, length(sign_barker_long), index_a, index_b);
+calc_snr(z, length(sign_barker_long), index_a, index_b, pll_block_size * samples);
 
 %write file (start)
 [errmsg] = signal2file('output\output.txt', est_signal_b);
