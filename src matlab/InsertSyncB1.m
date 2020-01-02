@@ -1,4 +1,4 @@
-%this function inserts sign_syncB1 into beginning and end of sign_inf
+% this function inserts sign_syncB1 into a beginning and an end of signal
 function [sign_out] = InsertSyncB1(sign_inf, sign_sync, delay)
 % input:
 % sign_inf   - information signal

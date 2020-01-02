@@ -54,6 +54,7 @@ n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
+pll_block_size = 1000;
 SNR = 10;        %signal to noise ratio
 
 %*****Barker codes set generation (start)*****
@@ -62,7 +63,7 @@ sign_barker_one = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13. Barker co
 sign_barker = GetPeriodicBarkerCode(sign_barker_one, n_sign_barker);
 %*****Barker codes set generation (stop)*****
 
-n_total_bits = delay + 2*length(sign_barker) + n_inf_bits;
+n_total_bits = delay + pll_block_size + 2 * length(sign_barker) + n_inf_bits;
 show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits);
 
 %modulation(start)
@@ -76,7 +77,8 @@ signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % model of information s
 % signal_inf_bits(1:fix(n_inf_bits/2)) = -1;
 
 %adding sync marks (start)
-signal  = InsertSyncB1(signal_inf_bits, sign_barker, delay);
+%signal  = InsertSyncB1(signal_inf_bits, sign_barker, delay);
+signal  = construct_signal_bpsk(signal_inf_bits, sign_barker, delay, pll_block_size);
 %adding sync marks (stop)
 
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
