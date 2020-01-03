@@ -97,7 +97,7 @@ signal_long = (Short2Long(signal, samples) + 1) / 2;     % OOK
 %signal_long = (Short2Long(signal, samples));            % BPSK
 signal_long(1:delay * samples) = 0;
 signal_long = SignalLongFilter(signal_long, samples, Fs);     % filtering
-u = signal_long.*sin(x)';
+u = signal_long .* sin(x)';
 
 %signal(1:5)
 % modulation(stop)
@@ -158,7 +158,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-%z = u';
+z = u';
 
 sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
 sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
@@ -175,7 +175,7 @@ title('Received signal spectrogram');
 sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
 %sign_x = sign_barker_b1_long;
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
-sign_x = sign_x.*sin(x(1:length(sign_x)))';
+sign_x = sign_x .* sin(x(1:length(sign_x)))';
 z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, index_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalization stop()
