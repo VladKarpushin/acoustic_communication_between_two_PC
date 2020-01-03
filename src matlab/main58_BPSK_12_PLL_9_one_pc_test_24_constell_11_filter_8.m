@@ -103,9 +103,9 @@ u = signal_long .* sin(x)';
 
 %air channel modeling (start)
 u = u / std(u);
-SNR = 10;        %signal to noise ratio
-signal_noise = randn(length(u), 1) / SNR;
-u = u + signal_noise;
+%SNR = 10;        %signal to noise ratio
+%signal_noise = randn(length(u), 1) / SNR;
+%u = u + signal_noise;
 %air channel modeling (stop)
 
 x1 = 0:2 * pi / 100:kt * 2 * pi;
@@ -172,6 +172,7 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 
 [est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 calc_snr(z, length(sign_barker_long), index_a, index_b, pll_block_size * samples);
+calc_freq_offset(z, length(sign_barker_long), index_a, pll_block_size * samples, Fs);
 
 %write file (start)
 [errmsg] = signal2file('output\output.txt', est_signal_b);
