@@ -99,7 +99,7 @@ signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 % qpsk_part = SignalLongFilter(qpsk_part, samples, Fs);     %filtering
 %u = signal_long.*sin(x)' + qpsk_part.*cos(x)';
 
-u = signal_long.*sin(x)';
+u = signal_long .* sin(x)';
 
 %modulation(stop)
 
@@ -133,7 +133,8 @@ sound(u, Fs, nBits);         %modulated signal
 % F = 5*Fs/100;  %frequency of signal, 200<F<Fs/2, [Hz]. even(1*Fs/100, 2*Fs/100, 4*Fs/100). F = 2(and 4)*Fs/100 - optimum
 % kF = 4;         %f1 = kF*f0, kF=2(and 8) - optimum
 % n_inf_bits = 1*8*1024;   %number of information bits
-tt = 1 + kt * (2 * length(sign_barker) + n_inf_bits) / F;   %common transmit time
+
+tt = 1 + kt * (pll_block_size + 2 * length(sign_barker) + n_inf_bits) / F;   %common transmit time
 nBits = 24;
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
 if abs(samples - fix(samples)) > 0                  %check Freq assignment error
@@ -151,7 +152,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-%z = u';
+z = u';
 
 sign_barker_long = Short2Long(sign_barker, samples);
 
@@ -167,7 +168,7 @@ title('Received signal spectrogram');
 sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering
 %sign_x = sign_barker_long;
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
-sign_x = sign_x.*sin(x(1:length(sign_x)))';
+sign_x = sign_x .* sin(x(1:length(sign_x)))';
 z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, index_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalizer stop()

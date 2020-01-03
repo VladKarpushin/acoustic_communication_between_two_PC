@@ -7,9 +7,10 @@ function [snr_estimated] = calc_snr(z, len_of_barker, index_a, index_b, pll_bloc
 
 index_a = index_a - len_of_barker;
 index_b = index_b + len_of_barker;
-if (index_a-4 > 1) && (index_b > 1) && (index_a < length(z)) && (index_b < length(z))  %snr estimation 
+index_noise = index_a - 7 - pll_block_size;
+if (index_noise > 1) && (index_b > 1) && (index_a < length(z)) && (index_b <= length(z))  %snr estimation 
     s = std(z(index_a:index_b));
-    n = std(z(1:index_a - 4 - pll_block_size));
+    n = std(z(1:index_noise));
     snr_estimated = (s / n) - 1;
     disp(['snr estimated = ', num2str(round(snr_estimated)), ' [times]']);
     disp(['snr estimated = ', num2str(round(10 * log10(snr_estimated))), ' [dB]']);
