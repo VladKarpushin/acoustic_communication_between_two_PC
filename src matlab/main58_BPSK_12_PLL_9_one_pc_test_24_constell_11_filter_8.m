@@ -89,7 +89,7 @@ end
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 %x = linspace(0,kt*n_total_bits*2*pi-(F*Td),n_total_bits*samples);
 %signal_long = (Short2Long(signal, samples)+1)/2;     %OOK
-signal_long = (Short2Long(signal, samples));        %BPSK
+signal_long = Short2Long(signal, samples);        %BPSK
 %signal_long(1:delay * samples) = 0;
 signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 
@@ -149,7 +149,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-%z = u';
+z = u';
 
 sign_barker_long = Short2Long(sign_barker, samples);
 
@@ -159,7 +159,7 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-%Fs = Fs + Fs * 7 * 10^-6;
+%Fs = Fs + Fs * 7 * 10^-6; % actual drift is 0.1544 Hz
 [~, index_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 % equalizer start()
