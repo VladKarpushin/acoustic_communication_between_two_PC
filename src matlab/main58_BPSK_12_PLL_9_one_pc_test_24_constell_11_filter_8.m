@@ -32,7 +32,7 @@ close all, clc, clear all;
 %[signal_inf_bits errmsg] = file2signal('input\main13.m');
 %[signal_inf_bits, errmsg] = file2signal('..\input\main13_2KB.m');
 filename = 'ones_1KB.m';
-[signal_inf_bits, errmsg] = file2signal(strcat('..\input\',filename));
+[signal_inf_bits, errmsg] = file2signal(strcat('..\input\', filename));
 
 if ~isempty(errmsg)
     disp('file2signal error');
@@ -55,7 +55,6 @@ n_inf_bits = 1024 * 4 * 1;      % number of information bits
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
 pll_block_size = 1000;
-SNR = 10;        %signal to noise ratio
 
 %*****Barker codes set generation (start)*****
 n_sign_barker = 75;   %quantity of Barker codes in a set.
@@ -100,16 +99,14 @@ signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 %u = signal_long.*sin(x)' + qpsk_part.*cos(x)';
 
 u = signal_long .* sin(x)';
-
 %modulation(stop)
-
 
 %air channel modeling (start)
 u = u / std(u);
-% signal_noise = randn(length(u),1)/SNR;
-% u = u + signal_noise;
+SNR = 10;        %signal to noise ratio
+signal_noise = randn(length(u), 1) / SNR;
+u = u + signal_noise;
 %air channel modeling (stop)
-
 
 x1 = 0:2 * pi / 100:kt * 2 * pi;
 x2 = 0:F * Td:kt * 2 * pi;

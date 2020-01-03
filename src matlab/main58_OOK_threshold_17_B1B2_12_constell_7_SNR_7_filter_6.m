@@ -104,8 +104,8 @@ u = signal_long .* sin(x)';
 
 %air channel modeling (start)
 u = u / std(u);
-% SNR = 1000;
-% signal_noise = randn(length(u),1)/SNR;
+% SNR = 1;
+% signal_noise = randn(length(u),1) / SNR;
 % u = u + signal_noise;
 %air channel modeling (stop)
 
