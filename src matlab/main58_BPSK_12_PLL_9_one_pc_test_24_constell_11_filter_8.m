@@ -50,11 +50,11 @@ Fs = 22050;     %sample rate
 F = Fs / 7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 7;      % number of information bits
+n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
-pll_block_size = 10000;
+pll_block_size = 100000;
 
 %*****Barker codes set generation (start)*****
 n_sign_barker = 75;   %quantity of Barker codes in a set.
@@ -159,6 +159,7 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
+%Fs = Fs + Fs * 7 * 10^-6;
 [~, index_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 % equalizer start()
