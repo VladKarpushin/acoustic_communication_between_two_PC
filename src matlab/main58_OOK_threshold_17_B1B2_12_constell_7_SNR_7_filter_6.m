@@ -158,7 +158,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
 sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
