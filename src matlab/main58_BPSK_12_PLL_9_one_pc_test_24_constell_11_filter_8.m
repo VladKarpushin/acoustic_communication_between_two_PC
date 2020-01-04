@@ -175,8 +175,12 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 [est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 calc_snr(z, length(sign_barker_long), index_a, index_b, pll_block_size * samples);
+
 est_F = calc_freq_offset(z_new, length(sign_barker_long), index_a, pll_block_size * samples, Fs);
 disp(['est_F - F = ', num2str(est_F - F)]);
+delta = 1 - est_F / F;
+Fs_new = Fs * (1 + delta);
+[est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 %(F - est_F) * 7 - Fs freq offset
 
