@@ -64,7 +64,7 @@ n = fix(n_inf_bits / period);
 n_total_bits = delay + 2 * length(sign_barker_b1) + n * length(sign_barker_b2) + n_inf_bits; % total bits plus delay
 %n_total_bits = delay + 2*length(SignBarker) + n_inf_bits;
 
-show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits);
+show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits, delay);
 %carrier signal forming(stop)
 
 % modulation(start)

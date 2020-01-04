@@ -63,7 +63,8 @@ sign_barker = GetPeriodicBarkerCode(sign_barker_one, n_sign_barker);
 %*****Barker codes set generation (stop)*****
 
 n_total_bits = delay + pll_block_size + 2 * length(sign_barker) + n_inf_bits;
-show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits);
+show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits, delay);
+%return
 
 %modulation(start)
 signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % model of information signal is noise
