@@ -50,7 +50,7 @@ Fs = 22050;     %sample rate
 F = Fs / 7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 1;      % number of information bits
+n_inf_bits = 1024 * 4 * 12;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
@@ -150,7 +150,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_long = Short2Long(sign_barker, samples);
 
@@ -160,7 +160,7 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-Fs = Fs + Fs * 7 * 10^-6; % actual drift is 0.1544 Hz
+%Fs = Fs - Fs * 7 * 10^-6; % actual drift is 0.1544 Hz
 [~, index_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 % equalizer start()
@@ -177,7 +177,7 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 calc_snr(z, length(sign_barker_long), index_a, index_b, pll_block_size * samples);
 
 est_F = calc_freq_offset(z_new, length(sign_barker_long), index_a, pll_block_size * samples, Fs);
-disp(['est_F - F = ', num2str(est_F - F)]);
+disp(['est_F - F = ', num2str(est_F - F), ' Hz']);
 delta = 1 - est_F / F;
 Fs_new = Fs * (1 + delta);
 [est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
