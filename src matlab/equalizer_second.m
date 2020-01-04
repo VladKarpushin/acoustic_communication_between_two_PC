@@ -4,9 +4,10 @@
 % Y = H * X, --> 1/H = X/Y
 
 function [H_out] = equalizer_second(sign_x, sign_y, w, size_out)
-sign_x = sign_x/max(sign_x);
-sign_y = sign_y/max(sign_y);
+sign_x = sign_x / max(sign_x);
+sign_y = sign_y / max(sign_y);
 
+% below part can be replaced by just "H = fft(sign_x, size_out) ./ fft(sign_y, size_out)", then smooth ;
 H = fft(sign_x) ./ fft(sign_y);
 H = smooth(H, w);
 H = smooth(H, w);   % second time smoothing for better smoothing
