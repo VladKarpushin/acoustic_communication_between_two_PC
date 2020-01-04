@@ -54,7 +54,7 @@ n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission (unit is bit)
-pll_block_size = 1;
+pll_block_size = 1000;
 
 %*****Barker codes set generation (start)*****
 n_sign_barker = 75;   %quantity of Barker codes in a set.
@@ -150,7 +150,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_long = Short2Long(sign_barker, samples);
 
