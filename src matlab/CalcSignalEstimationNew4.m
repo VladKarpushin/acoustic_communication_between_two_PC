@@ -30,31 +30,31 @@ signal_constel = 0;
 iA = 0;
 iB = 0;
 
-EstSignal = zeros(length(corr_integral),1);
-EstSignal = (2 * (corr_integral > threshold))-1;    %resolver
+EstSignal = zeros(length(corr_integral), 1);
+EstSignal = (2 * (corr_integral > threshold)) - 1;    %resolver
 % x = 1:length(EstSignal);
 % x=x/Fs;
 % figure,plot(x,EstSignal);
 % title('EstSignal');
 
 %****syncronization start*******
-[SignSync Err] = CalcCCF_FFT(EstSignal,sign_barker_long,0);
+[SignSync Err] = CalcCCF_FFT(EstSignal, sign_barker_long, 0);
 % figure,plot(SignSync);
 % title('SignSync');
 
-[MaxSignSync,ImaxSignSync] = max(SignSync);  %largest element index
-[MinSignSync,IminSignSync] = min(SignSync);  %smalles element index
+[MaxSignSync, ImaxSignSync] = max(SignSync);  %largest element index
+[MinSignSync, IminSignSync] = min(SignSync);  %smalles element index
 % disp('Sync signal information');
 % disp(['MaxSignSync = ',num2str(MaxSignSync),', ImaxSignSync = ',num2str(ImaxSignSync)]);
 % disp(['MinSignSync = ',num2str(MinSignSync),', IminSignSync = ',num2str(IminSignSync)]);
 
 iA = ImaxSignSync + length(sign_barker_long);
-iB = IminSignSync-1;
+iB = IminSignSync - 1;
 if iA > iB                  
     iA = IminSignSync + length(sign_barker_long);
-    iB = ImaxSignSync-1;
-    EstSignal = -EstSignal;
-    signal_complex = -signal_complex;
+    iB = ImaxSignSync - 1;
+    EstSignal = - EstSignal;
+    signal_complex = - signal_complex;
 %     disp('Error. Sync error. ImaxSignSync > IminSignSync ');
 %     Err = 1;
 %     return;

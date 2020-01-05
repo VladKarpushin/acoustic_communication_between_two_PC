@@ -51,7 +51,7 @@ Fs = 22050;     %sample rate
 F = Fs / 7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 1;      % number of information bits
+n_inf_bits = 1024 * 4 * 30;      % number of information bits
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
@@ -163,29 +163,29 @@ figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier trans
 title('Received signal spectrogram');
 
 Fs = Fs - Fs * 7 * 10^-6; % actual drift is 0.1544 Hz
-[~, index_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
+[~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 % equalizer start()
 sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering
 %sign_x = sign_barker_long;
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 sign_x = sign_x .* sin(x(1:length(sign_x)))';
-z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, index_a);
+z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, ind_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalizer stop()
 
-[est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
+[est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
-calc_snr(z, length(sign_barker_long), index_a, index_b, pll_block_size * samples);
+calc_snr(z, length(sign_barker_long), ind_a, ind_b, pll_block_size * samples);
 
 % freq correction (start)
-est_F = calc_freq_offset(z_new, length(sign_barker_long), index_a, pll_block_size * samples, Fs);
+est_F = calc_freq_offset(z_new, length(sign_barker_long), ind_a, pll_block_size * samples, Fs);
 disp(['est_F - F = ', num2str(est_F - F), ' Hz']);
 delta = 1 - est_F / F;
 Fs_new = Fs * (1 + delta);
 % freq correction (stop)
 
-[est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
+[est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 %write file (start)
 [errmsg] = signal2file('output\output.txt', est_signal_b);
