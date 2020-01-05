@@ -25,6 +25,7 @@
 %2016-12-20 added code for SNR estimation
 %2017-01-02 added spectrogram
 %2019-11-04 start to equalizer development
+% 2020-01-05 added freq correction
 
 close all, clc, clear all;
 
@@ -122,7 +123,7 @@ figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-sound(u, Fs, nBits);         %modulated signal
+%sound(u, Fs, nBits);         %modulated signal
 
 %**************************************************
 %***************Receiver***************************
@@ -151,7 +152,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-%z = u';
+z = u';
 
 sign_barker_long = Short2Long(sign_barker, samples);
 
@@ -161,7 +162,7 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-%Fs = Fs - Fs * 7 * 10^-6; % actual drift is 0.1544 Hz
+Fs = Fs - Fs * 7 * 10^-6; % actual drift is 0.1544 Hz
 [~, index_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 % equalizer start()
@@ -177,13 +178,14 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 
 calc_snr(z, length(sign_barker_long), index_a, index_b, pll_block_size * samples);
 
+% freq correction (start)
 est_F = calc_freq_offset(z_new, length(sign_barker_long), index_a, pll_block_size * samples, Fs);
 disp(['est_F - F = ', num2str(est_F - F), ' Hz']);
 delta = 1 - est_F / F;
 Fs_new = Fs * (1 + delta);
-[est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
+% freq correction (stop)
 
-%(F - est_F) * 7 - Fs freq offset
+[est_signal_b, index_a, index_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 %write file (start)
 [errmsg] = signal2file('output\output.txt', est_signal_b);
