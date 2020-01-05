@@ -56,7 +56,7 @@ x = 1:length(z);
 x = x / Fs;
 figure, plot(x, corr_integral, 'r', x, z, 'b');
 xlabel('sec');
-title('SignAmp (r) and z (b)');
+title('corr-integral (r) and z (b)');
 
 c = linspace(1, 10, length(signal_constel));                         % from black to yellow
 figure, scatter(real(signal_constel), imag(signal_constel), [], c);     % create a scatter plot and vary the circle color.
