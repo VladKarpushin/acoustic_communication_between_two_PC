@@ -102,10 +102,10 @@ signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 %u = signal_long.*sin(x)' + qpsk_part.*cos(x)';
 
 u = signal_long .* sin(x)';
+u = u / std(u);
 %modulation(stop)
 
 %air channel modeling (start)
-u = u / std(u);
 %SNR = 10;        %signal to noise ratio
 %signal_noise = randn(length(u), 1) / SNR;
 %u = u + signal_noise;

@@ -3,7 +3,9 @@
 
 function plot_psd(z, Fs, str_x_label, str_title)
 
-Z_PSD = fft(z) .* conj(fft(z));   % power spectrum density
+z_spectrum = fft(z);
+%Z_PSD = fft(z) .* conj(fft(z));   % power spectrum density
+Z_PSD = z_spectrum .* conj(z_spectrum);   % power spectrum density
 Z_PSD(length(Z_PSD)) = 0;
 Z_PSD(1) = 0;
 x = 0:length(Z_PSD) - 1;
