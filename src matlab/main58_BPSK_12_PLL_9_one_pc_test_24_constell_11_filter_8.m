@@ -56,7 +56,7 @@ n_inf_bits = 1024 * 4 * 5;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission, unit is bits
-freq_burst_size = 0; % frequency correction burst size, unit is bits
+freq_burst_size = 1000; % frequency correction burst size, unit is bits
 
 %*****Barker codes set generation (start)*****
 n_sign_barker = 75;   %quantity of Barker codes in a set.
