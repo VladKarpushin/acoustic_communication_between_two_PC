@@ -179,7 +179,7 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 calc_snr(z, length(sign_barker_long), ind_a, ind_b, freq_burst_size * samples);
 
 % freq correction (start)
-[~, Fs_new] = freq_correction(z_new, length(sign_barker_long), ind_a, freq_burst_size * samples, Fs, F);
+[~, Fs_new] = freq_correction(z_new, ind_a, length(sign_barker_long), freq_burst_size * samples, Fs, F);
 % freq correction (stop)
 
 [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
