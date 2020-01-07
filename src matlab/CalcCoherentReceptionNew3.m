@@ -13,7 +13,6 @@ function [corr_integral signal_complex] = CalcCoherentReceptionNew3(z, T, F, Fs,
 % output:
 % 	output - cross correlation function (CCF) received signal z and sin wave. Another name is correlation integral
 
-
 Td = 2 * pi / Fs;   %sampling interval
 x = 0:F * Td:(length(z) + PLL_offset_n) * (F * Td);
 x = x(1 + PLL_offset_n:length(z) + PLL_offset_n);

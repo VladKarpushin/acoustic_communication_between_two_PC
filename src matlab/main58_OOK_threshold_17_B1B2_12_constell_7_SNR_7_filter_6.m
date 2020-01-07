@@ -174,8 +174,10 @@ title('Received signal spectrogram');
 % equalization start()
 sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
 %sign_x = sign_barker_b1_long;
-x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
-sign_x = sign_x .* sin(x(1:length(sign_x)))';
+%x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
+%sign_x = sign_x .* sin(x(1:length(sign_x)))';
+x = (0:length(sign_x) - 1) * F * Td;
+sign_x = sign_x .* sin(x)';
 z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, index_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalization stop()
