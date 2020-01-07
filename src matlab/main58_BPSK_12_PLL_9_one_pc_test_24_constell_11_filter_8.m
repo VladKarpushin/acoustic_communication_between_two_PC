@@ -1,30 +1,30 @@
 %2016-01-12
-%Sound transfer/receiver
-%2016-03-10 zero errors during signal transmittion
-%2016-04-04 transferred file from the same pc
-%2016-04-26 finished
-%2016-05-22 added duration of one symbol output/output
-%2016-05-29 added time delay in a beginning of transmission (unit is bit)
-%2016-06-05 added comments - samples
-%2016-06-18 auto-calculated threshold for OOK,
-%2016-06-19 released BPSK with BER=0
-%2016-07-03 started to develop "phase locking" (PLL - Phase Locked Loop)
-%2016-07-06 realised PLL algorithm, tested for models
-%2016-07-09 Successfully tested PLL with real signals 
-%2016-07-22 Met problem with sync during >2KB transmitting
-%2016-07-24 std(VKF) output, improved PLL criteria
-%2016-07-27 added comments
-%2016-08-13 added GetPeriodicBarkerCode, InsertSyncB2 and InsertSyncB1
-%2016-08-21 added sign_barker_long = Short2Long(sign_barker, samples);
-%2016-08-25 added Long2Short
-%2016-11-05 added code for signal constellation
-%2016-11-06 added color for phase
-%2016-11-20 updated modulation code
-%2016-11-30 improved PSD code
-%2016-12-13 added tx filter code
-%2016-12-20 added code for SNR estimation
-%2017-01-02 added spectrogram
-%2019-11-04 start to equalizer development
+% Sound transfer/receiver
+% 2016-03-10 zero errors during signal transmittion
+% 2016-04-04 transferred file from the same pc
+% 2016-04-26 finished
+% 2016-05-22 added duration of one symbol output/output
+% 2016-05-29 added time delay in a beginning of transmission (unit is bit)
+% 2016-06-05 added comments - samples
+% 2016-06-18 auto-calculated threshold for OOK,
+% 2016-06-19 released BPSK with BER=0
+% 2016-07-03 started to develop "phase locking" (PLL - Phase Locked Loop)
+% 2016-07-06 realised PLL algorithm, tested for models
+% 2016-07-09 Successfully tested PLL with real signals 
+% 2016-07-22 Met problem with sync during >2KB transmitting
+% 2016-07-24 std(VKF) output, improved PLL criteria
+% 2016-07-27 added comments
+% 2016-08-13 added GetPeriodicBarkerCode, InsertSyncB2 and InsertSyncB1
+% 2016-08-21 added sign_barker_long = Short2Long(sign_barker, samples);
+% 2016-08-25 added Long2Short
+% 2016-11-05 added code for signal constellation
+% 2016-11-06 added color for phase
+% 2016-11-20 updated modulation code
+% 2016-11-30 improved PSD code
+% 2016-12-13 added tx filter code
+% 2016-12-20 added code for SNR estimation
+% 2017-01-02 added spectrogram
+% 2019-11-04 start to equalizer development
 % 2020-01-05 added freq correction
 
 close all, clc, clear all;
@@ -51,20 +51,20 @@ Fs = 22050;     %sample rate
 F = Fs / 7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 2;      % number of information bits
+n_inf_bits = 1024 * 4 * 5;      % number of information bits
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
-delay = 1000;       % time delay in a beginning of transmission (unit is bit)
-pll_block_size = 1000;
+delay = 1000;       % time delay in a beginning of transmission, unit is bits
+freq_burst_size = 1000; % frequency correction burst size, unit is bits
 
 %*****Barker codes set generation (start)*****
 n_sign_barker = 75;   %quantity of Barker codes in a set.
 sign_barker_one = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
-sign_barker = GetPeriodicBarkerCode(sign_barker_one, n_sign_barker);
+sign_barker = GetPeriodicBarkerCode(sign_barker_one, n_sign_barker); % can be replaced by synch_burst
 %*****Barker codes set generation (stop)*****
 
-n_total_bits = delay + pll_block_size + 2 * length(sign_barker) + n_inf_bits;
+n_total_bits = delay + freq_burst_size + 2 * length(sign_barker) + n_inf_bits;
 show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits, delay);
 %return
 
@@ -80,7 +80,7 @@ signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % model of information s
 
 %adding sync marks (start)
 %signal  = InsertSyncB1(signal_inf_bits, sign_barker, delay);
-signal  = construct_signal_bpsk(signal_inf_bits, sign_barker, delay, pll_block_size);
+signal  = construct_signal_bpsk(signal_inf_bits, sign_barker, delay, freq_burst_size);
 %adding sync marks (stop)
 
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
@@ -123,7 +123,7 @@ figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-%sound(u, Fs, nBits);         %modulated signal
+sound(u, Fs, nBits);         %modulated signal
 
 %**************************************************
 %***************Receiver***************************
@@ -134,7 +134,7 @@ nBits = 24;
 % kF = 4;         %f1 = kF*f0, kF=2(and 8) - optimum
 % n_inf_bits = 1*8*1024;   %number of information bits
 
-tt = 1 + kt * (pll_block_size + 2 * length(sign_barker) + n_inf_bits) / F;   %common transmit time
+tt = 1 + kt * (freq_burst_size + 2 * length(sign_barker) + n_inf_bits) / F;   %common transmit time
 nBits = 24;
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
 if abs(samples - fix(samples)) > 0                  %check Freq assignment error
@@ -152,7 +152,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_long = Short2Long(sign_barker, samples);
 
@@ -162,7 +162,7 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-Fs = Fs - Fs * 7 * 10^-6; % actual drift is 0.1544 Hz
+%Fs = Fs - Fs * 7 * 10^-6; % actual drift is 0.1544 Hz
 [~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 % equalizer start()
@@ -176,10 +176,10 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 
 [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
-calc_snr(z, length(sign_barker_long), ind_a, ind_b, pll_block_size * samples);
+calc_snr(z, length(sign_barker_long), ind_a, ind_b, freq_burst_size * samples);
 
 % freq correction (start)
-est_F = calc_freq_offset(z_new, length(sign_barker_long), ind_a, pll_block_size * samples, Fs);
+est_F = calc_freq_offset(z_new, length(sign_barker_long), ind_a, freq_burst_size * samples, Fs);
 disp(['est_F - F = ', num2str(est_F - F), ' Hz']);
 delta = 1 - est_F / F;
 Fs_new = Fs * (1 + delta);
