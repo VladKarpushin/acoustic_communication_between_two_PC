@@ -1,7 +1,7 @@
 % 2020-01-03
-% estimation of freq offset befween tx and rx, Fs estimation
+% estimation of freq offset befween tx and rx, Fs estimation, frequency correction
 
-function [est_F, est_Fs] = calc_freq_offset(z, len_of_barker, index_a, freq_burst_size, Fs, F)
+function [est_F, est_Fs] = freq_correction(z, len_of_barker, index_a, freq_burst_size, Fs, F)
 
 est_F = F;
 est_Fs = Fs;
