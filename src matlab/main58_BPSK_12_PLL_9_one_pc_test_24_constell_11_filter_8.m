@@ -152,7 +152,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-%z = u';
+z = u';
 
 sign_barker_long = Short2Long(sign_barker, samples);
 
@@ -168,8 +168,10 @@ title('Received signal spectrogram');
 % equalizer start()
 sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering
 %sign_x = sign_barker_long;
-x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
-sign_x = sign_x .* sin(x(1:length(sign_x)))';
+x = (0:length(sign_x) - 1) * F * Td;
+sign_x = sign_x .* sin(x)';
+%x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
+%sign_x = sign_x .* sin(x(1:length(sign_x)))';
 z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, ind_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalizer stop()
@@ -177,10 +179,7 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
 calc_snr(z, ind_a, ind_b, length(sign_barker_long), freq_burst_size * samples);
-
-% freq correction (start)
 [~, Fs_new] = freq_correction(z_new, ind_a, length(sign_barker_long), freq_burst_size * samples, Fs, F);
-% freq correction (stop)
 
 [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
 
