@@ -56,7 +56,7 @@ n_inf_bits = 1024 * 4 * 5;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission, unit is bits
-freq_burst_size = 1000; % frequency correction burst size, unit is bits
+freq_burst_size = 0; % frequency correction burst size, unit is bits
 
 %*****Barker codes set generation (start)*****
 n_sign_barker = 75;   %quantity of Barker codes in a set.
@@ -179,10 +179,7 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 calc_snr(z, length(sign_barker_long), ind_a, ind_b, freq_burst_size * samples);
 
 % freq correction (start)
-est_F = calc_freq_offset(z_new, length(sign_barker_long), ind_a, freq_burst_size * samples, Fs);
-disp(['est_F - F = ', num2str(est_F - F), ' Hz']);
-delta = 1 - est_F / F;
-Fs_new = Fs * (1 + delta);
+[~, Fs_new] = calc_freq_offset(z_new, length(sign_barker_long), ind_a, freq_burst_size * samples, Fs, F);
 % freq correction (stop)
 
 [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);
