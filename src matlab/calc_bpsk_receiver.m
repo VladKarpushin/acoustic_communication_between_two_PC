@@ -4,7 +4,7 @@
 function [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits)
 
 %*******PLL start ******
-n = 30;
+n = 20;
 
 phi = pi * (0:n) / n;
 max_abs_corr_integral   = -2 * ones(n, 1);   %max(CCF received signal and sin wave), max(correlation integral)
@@ -17,10 +17,8 @@ threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
 %ind_aaa           = -2 * ones(n, 1);   %std_sign_sync is std(CCF)
 for i = 1:n
-    %[corr_integral, tmp] = CalcCoherentReceptionNew3(z, samples, F, Fs, PLL_offset_n(i));   %coherent reception
     [corr_integral, tmp] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
     [est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
-    %[est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i) signal_constel ind_aaa(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
     
     max_abs_corr_integral(i) = max(abs(corr_integral));
     BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits);
