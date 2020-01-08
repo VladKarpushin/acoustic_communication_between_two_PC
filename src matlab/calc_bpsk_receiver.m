@@ -15,7 +15,6 @@ delta                   = -2 * ones(n, 1);   %delta is difference between index(
 std_sign_sync           = -2 * ones(n, 1);   %std_sign_sync is std(CCF)
 threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
-%ind_aaa           = -2 * ones(n, 1);   %std_sign_sync is std(CCF)
 for i = 1:n
     [corr_integral, tmp] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
     [est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
