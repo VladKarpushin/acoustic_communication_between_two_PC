@@ -4,9 +4,9 @@
 function [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits)
 
 %*******PLL start ******
-n = 2 * ceil(samples / 4);          %number of PLL iterations n = Pi/4
-PLL_offset_n = 0:n - 1;           %PLL_offset_n - %sin offset (used for PLL). It is equal to PLL_offset_n  = ceil(samples/4). PLL_offset_n = 0 means there is not offset
+n = 30;
 
+phi = pi * (0:n) / n;
 max_abs_corr_integral   = -2 * ones(n, 1);   %max(CCF received signal and sin wave), max(correlation integral)
 BER                     = -2 * ones(n, 1);   %BER is bit error rate
 max_sign_sync           = -2 * ones(n, 1);   %max_sign_sync is max(CCF)
@@ -17,7 +17,8 @@ threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
 %ind_aaa           = -2 * ones(n, 1);   %std_sign_sync is std(CCF)
 for i = 1:n
-    [corr_integral, tmp] = CalcCoherentReceptionNew3(z, samples, F, Fs, PLL_offset_n(i));   %coherent reception
+    %[corr_integral, tmp] = CalcCoherentReceptionNew3(z, samples, F, Fs, PLL_offset_n(i));   %coherent reception
+    [corr_integral, tmp] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
     [est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
     %[est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i) signal_constel ind_aaa(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
     
@@ -34,16 +35,16 @@ i = -2;
 [m i] = max(max_sign_sync - min_sign_sync);   %PLL criterion1: max(CCF) - min(CCF) = max
 if abs(ErrSyst(i)) > samples / 2      
     [m i] = min(abs(ErrSyst));          %PLL criterion2: systematic error = min
+    disp(['PLL criterion2: systematic error = min']);
 end
 
-disp(['PLL_offset_n = ', num2str(PLL_offset_n(i))]);
+disp(['phi = ', num2str(phi(i)), ' [radians]']);
+disp(['phi = ', num2str(phi(i) * 180 / pi), ' [degrees]']);
+disp(['phi precision = ', num2str(180 / n), ' [degrees]']);
 disp(['BER = ', num2str(BER(i))]);
 disp(['max_sign_sync - min_sign_sync = ', num2str(max_sign_sync(i) - min_sign_sync(i))]);
-%disp(['delta = ', num2str(delta(i))]);
-%disp(['ErrSyst (systematic error) = ', num2str(ErrSyst(i))]);
-%disp(['std_sign_sync = ', num2str(std_sign_sync(i))]);
 
-[corr_integral signal_complex] = CalcCoherentReceptionNew3(z, samples, F, Fs, PLL_offset_n(i));   %coherent reception
+[corr_integral signal_complex] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
 [est_signal_b max_sign_sync min_sign_sync Err delta std_sign_sync signal_constel ind_a ind_b] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, signal_complex); %This function estimates information bits (information signal)
 
 plot_time(corr_integral, Fs, 'sec', 'corr integral')

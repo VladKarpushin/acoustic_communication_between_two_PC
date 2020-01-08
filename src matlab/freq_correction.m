@@ -35,7 +35,7 @@ delta = 1 - est_F / F;
 est_Fs = Fs * (1 + delta);
 
 disp(['estimated F = ', num2str(est_F), ' Hz']);
-disp(['estimated F syst error = ', num2str(x(2)), ' Hz']);
+disp(['estimated F precision = ', num2str(x(2)), ' Hz']);
 disp(['est_F - F = ', num2str(est_F - F), ' Hz']);
 disp(['est_Fs - Fs = ', num2str(est_Fs - Fs), ' Hz']);
 
