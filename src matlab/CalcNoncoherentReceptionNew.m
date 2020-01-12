@@ -1,66 +1,66 @@
 %2016-02-13 This function realise noncoherent reception
 %реализуетс€ коррел€ционный приЄм по двум квадратурным составл€ющим.
-function [SignalComplex] = CalcNoncoherentReceptionNew(SignR,T,F,Fs)
+function [signal_complex] = CalcNoncoherentReceptionNew(z, T, F, Fs)
 % input:
-% 	SignR - received signal
+% 	z - received signal
 %   T     - window of filter
 %   Fs    - sample rate
 %   F     - frequency of signal, 200<F<Fs/20000, [Hz]
 
 % output:
-%   SignalComplex   - complex signal
+%   signal_complex   - complex signal
 
-Td = 2*pi/Fs;   %sampling interval
-x=0:F*Td:length(SignR)*(F*Td);       %f0
-x = x(1:length(SignR));
-SignS = sin(x);          %local oscullator, sin signal
-SignC = cos(x);          %local oscullator, cos signal
+Td = 2 * pi / Fs;   %sampling interval
+step = F * Td;
+x = 0:step:(length(z) - 1) * step;
 
 figure;
-h = histogram(abs(SignR));
+h = histogram(abs(z));
 title('z histogramm');
 hx = h.BinWidth*(1:h.NumBins);
 hy = h.Values;
 hn = round(h.NumBins*0.3);    %take 30%
 [m i] = max(hy(length(hy)-hn:length(hy)));
 EstMax = hx(length(hy)+i-hn-1);
-SignR = SignR/EstMax;
-figure,plot(SignR);
-title('SignR/EstMax');
+z = z / EstMax;
+figure,plot(z);
+title('z/EstMax');
 
-%SignR = SignR/max(SignR);
-SignRS = SignR.*(SignS);
-SignRC = SignR.*(SignC);
+%z = z/max(z);
+z_sin = z .* sin(x);        %coefficient of correlation with sin
+z_cos = z .* cos(x);        %coefficient of correlation with cos
 
-% x=1:length(SignR);
-% figure, plot(x,SignR,'r',x,SignRS,'g',x,SignRC,'b');
-% title('SignR (r) SignRS (g) and SignRC (b)');
 
-SignRS_smooth = smooth(SignRS,T);   %Q(t) quadrature
-SignRC_smooth = smooth(SignRC,T);   %I(t) in-phase
+% x=1:length(z);
+% figure, plot(x,z,'r',x,z_sin,'g',x,z_cos,'b');
+% title('z (r) z_sin (g) and z_cos (b)');
 
-% x=1:length(SignR);
-% figure, plot(x,SignR,'r',x,SignRS_smooth,'g',x,SignRC_smooth,'b');
-% title('SignR (r) SignRS_smooth (g) and SignRC_smooth (b)');
+%zS_smooth = smooth(z_sin, T);   %Q(t) quadrature
+%zC_smooth = smooth(z_cos, T);   %I(t) in-phase
+
+% x=1:length(z);
+% figure, plot(x,z,'r',x,zS_smooth,'g',x,zC_smooth,'b');
+% title('z (r) zS_smooth (g) and zC_smooth (b)');
 
 %normalization (start)
 %varSC   = var(SignS);
-%varR    = var(SignR);
+%varR    = var(z);
 %varRSC  = sqrt(varR*varSC);
-% SignRS_smooth = SignRS_smooth/varRSC; %in this case SignAmpl depends on SignR duration
-% SignRC_smooth = SignRC_smooth/varRSC;
+% zS_smooth = zS_smooth/varRSC; %in this case SignAmpl depends on z duration
+% zC_smooth = zC_smooth/varRSC;
 
-% SignRS_smooth = SignRS_smooth/std(SignS);   %in this case SignAmpl depends on SignR Amplitude
-% SignRC_smooth = SignRC_smooth/std(SignS);
+% zS_smooth = zS_smooth/std(SignS);   %in this case SignAmpl depends on z Amplitude
+% zC_smooth = zC_smooth/std(SignS);
 %normalization (stop)
 
-%SignAmpl = SignRS_smooth.^2+SignRC_smooth.^2;   %detected amplitude
-%SignPhase = -atan(SignRS_smooth./SignRC_smooth);
-SignalComplex = complex(SignRS_smooth, SignRC_smooth);
+%SignAmpl = zS_smooth.^2+zC_smooth.^2;   %detected amplitude
+%SignPhase = -atan(zS_smooth./zC_smooth);
+%signal_complex = complex(zS_smooth, zC_smooth);
+signal_complex = complex(smooth(z_cos, T), smooth(z_sin, T));
 
-% x=1:length(SignR);
-% figure, plot(x,SignR,'r',x,SignRS_smooth,'g',x,SignRC_smooth,'b',x,SignAmpl,'y',x,SignPhase,'k');
-% title('SignR (r) SignRS_smooth (g) and SignRC_smooth (b) SignAmpl (y) SignPhase k');
-% figure, plot(x,SignR,'r',x,SignRS_smooth,'g');
-% title('SignR (r) SignRS_smooth (g)');
+% x=1:length(z);
+% figure, plot(x,z,'r',x,zS_smooth,'g',x,zC_smooth,'b',x,SignAmpl,'y',x,SignPhase,'k');
+% title('z (r) zS_smooth (g) and zC_smooth (b) SignAmpl (y) SignPhase k');
+% figure, plot(x,z,'r',x,zS_smooth,'g');
+% title('z (r) zS_smooth (g)');
 end

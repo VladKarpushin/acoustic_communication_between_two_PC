@@ -51,7 +51,7 @@ Fs = 22050;     %sample rate
 F = Fs / 7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 4;      % number of information bits
+n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
@@ -99,9 +99,9 @@ signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 % qpsk_part = 2 * randi([0, 1], length(signal), 1) - 1; % model of information signal is noise
 % qpsk_part = (Short2Long(qpsk_part, samples));        %BPSK
 % qpsk_part = SignalLongFilter(qpsk_part, samples, Fs);     %filtering
-%u = signal_long.*sin(x)' + qpsk_part.*cos(x)';
+%u = signal_long.*cos(x)' + qpsk_part.*sin(x)';
 
-u = signal_long .* sin(x)';
+u = signal_long .* cos(x)';
 u = u / std(u);
 %modulation(stop)
 
@@ -169,10 +169,10 @@ title('Received signal spectrogram');
 sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering
 %sign_x = sign_barker_long;
 x = (0:length(sign_x) - 1) * F * Td;
-sign_x = sign_x .* sin(x)';
+sign_x = sign_x .* cos(x)';
 z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, ind_a);
 %x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
-%sign_x = sign_x .* sin(x(1:length(sign_x)))';
+%sign_x = sign_x .* cos(x(1:length(sign_x)))';
 %z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, ind_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalizer stop()

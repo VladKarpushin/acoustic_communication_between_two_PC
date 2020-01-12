@@ -12,5 +12,5 @@ disp(['Number of total transmitted bits = ', num2str(n_total_bits - delay),' [bi
 disp(['Number of information transmitted bits = ', num2str(n_inf_bits),' [bits]']);
 disp(['Physical layer gross bitrate = ', num2str(F / kt),' [bits / s]']);
 disp(['Net bitrate = ', num2str(fix(n_inf_bits / t)),' [bits / s]']);
-disp(['Symbol rate = ', num2str(F / kt),' [Hz]']);
+disp(['Symbol rate = baud rate = ', num2str(F / kt),' [Hz]']);
 disp(['common transmit time = ', num2str(t),' [s]']);

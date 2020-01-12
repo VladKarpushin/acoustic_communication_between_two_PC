@@ -16,10 +16,10 @@ std_sign_sync           = -2 * ones(n, 1);   %std_sign_sync is std(CCF)
 threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
 for i = 1:n
-    [corr_integral, tmp] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
-    [est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i)] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, tmp); %This function estimates information bits (information signal)
+    [signal_complex] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
+    [est_signal_b, max_sign_sync(i), min_sign_sync(i), Err delta(i), std_sign_sync(i)] = CalcSignalEstimationNew4(threshold, sign_barker_long, samples, signal_complex); %This function estimates information bits (information signal)
     
-    max_abs_corr_integral(i) = max(abs(corr_integral));
+    max_abs_corr_integral(i) = max(abs(real(signal_complex)));
     BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits);
 end
 ErrSyst = n_inf_bits * samples - delta; %systematic error between n_inf_bits*samples and delta
@@ -41,14 +41,14 @@ disp(['phi precision = ', num2str(180 / n), ' [degrees]']);
 disp(['BER = ', num2str(BER(i))]);
 disp(['max_sign_sync - min_sign_sync = ', num2str(max_sign_sync(i) - min_sign_sync(i))]);
 
-[corr_integral signal_complex] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
-[est_signal_b max_sign_sync min_sign_sync Err delta std_sign_sync signal_constel ind_a ind_b] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, signal_complex); %This function estimates information bits (information signal)
+[signal_complex] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
+[est_signal_b max_sign_sync min_sign_sync Err delta std_sign_sync signal_constel ind_a ind_b] = CalcSignalEstimationNew4(threshold, sign_barker_long, samples, signal_complex); %This function estimates information bits (information signal)
 
-plot_time(corr_integral, Fs, 'sec', 'corr integral')
+plot_time(real(signal_complex), Fs, 'sec', 'corr integral')
 
 x = 1:length(z);
 x = x / Fs;
-figure, plot(x, corr_integral, 'r', x, z, 'b');
+figure, plot(x, real(signal_complex), 'r', x, z, 'b');
 xlabel('sec');
 title('corr-integral (r) and z (b)');
 

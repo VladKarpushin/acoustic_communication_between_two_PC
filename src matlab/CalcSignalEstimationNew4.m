@@ -4,7 +4,7 @@
 %for BPSK only
 %2016-11-05 added code for signal constellation
 %2016-12-20 added iAB1 and iBB1 export for SNR calculation
-function [est_signal_b  MaxSignSync MinSignSync Err delta StdSignSync signal_constel iA iB] = CalcSignalEstimationNew4(corr_integral, threshold, sign_barker_long, samples, signal_complex)
+function [est_signal_b  MaxSignSync MinSignSync Err delta StdSignSync signal_constel iA iB] = CalcSignalEstimationNew4(threshold, sign_barker_long, samples, signal_complex)
 % input:
 % 	corr_integral    - cross correlation function (CCF) received signal SignR and sin wave. Another name is correlation integral
 % 	threshold       - resolver threshold. Should be zero for BPSK
@@ -30,6 +30,7 @@ signal_constel = 0;
 iA = 0;
 iB = 0;
 
+corr_integral = real(signal_complex);
 EstSignal = zeros(length(corr_integral), 1);
 EstSignal = (2 * (corr_integral > threshold)) - 1;    %resolver
 % x = 1:length(EstSignal);
