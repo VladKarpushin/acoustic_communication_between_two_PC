@@ -59,12 +59,20 @@ delay = 1000;       % time delay in a beginning of transmission, unit is bits
 freq_burst_size = 1000; % frequency correction burst size, unit is bits
 
 %*****Barker codes set generation (start)*****
-n_sign_barker = 75;   %quantity of Barker codes in a set.
-sign_barker_one = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
-sign_barker = GetPeriodicBarkerCode(sign_barker_one, n_sign_barker); % can be replaced by synch_burst
+% n_sign_barker = 75;   %quantity of Barker codes in a set.
+% sign_barker_one = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
+% sign_barker = GetPeriodicBarkerCode(sign_barker_one, n_sign_barker); % can be replaced by synch_burst
 %*****Barker codes set generation (stop)*****
 
-n_total_bits = delay + freq_burst_size + 2 * length(sign_barker) + n_inf_bits;
+%*****Barker codes set generation (start)*****
+n_sign_barker = 75;   % quantity of Barker codes in a set.
+sign_barker_one_b1 = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; % Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
+sign_barker_one_b2 = [1 1 1 -1 -1 -1 1 -1 -1 1 -1]'; % Barker code N=11. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems.
+sign_barker_b1 = GetPeriodicBarkerCode(sign_barker_one_b1, n_sign_barker);
+sign_barker_b2 = GetPeriodicBarkerCode(sign_barker_one_b2, n_sign_barker);
+%*****Barker codes set generation (stop)*****
+
+n_total_bits = delay + freq_burst_size + length(sign_barker_b1) + length(sign_barker_b2) + n_inf_bits;
 show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits, delay);
 %return
 
@@ -80,7 +88,7 @@ signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % model of information s
 
 %adding sync marks (start)
 %signal  = InsertSyncB1(signal_inf_bits, sign_barker, delay);
-signal  = construct_signal_bpsk(signal_inf_bits, sign_barker, delay, freq_burst_size);
+signal  = construct_signal_bpsk(signal_inf_bits, sign_barker_b1, sign_barker_b2, delay, freq_burst_size);
 %adding sync marks (stop)
 
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
@@ -134,7 +142,7 @@ sound(u, Fs, nBits);         %modulated signal
 % kF = 4;         %f1 = kF*f0, kF=2(and 8) - optimum
 % n_inf_bits = 1*8*1024;   %number of information bits
 
-tt = 1 + kt * (freq_burst_size + 2 * length(sign_barker) + n_inf_bits) / F;   %common transmit time
+tt = 3 + kt * (freq_burst_size + length(sign_barker_b1) + length(sign_barker_b2) + n_inf_bits) / F;   %common transmit time
 nBits = 24;
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
 if abs(samples - fix(samples)) > 0                  %check Freq assignment error
@@ -147,14 +155,15 @@ get(recObj);
 % Record your voice for 5 seconds.
 %recObj = audiorecorder;
 disp('Start recording.');
-recordblocking(recObj, tt + 2);
+recordblocking(recObj, tt);
 disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
 %z = u';
 
-sign_barker_long = Short2Long(sign_barker, samples);
+sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
+sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
 
 plot_time(z, Fs, 'sec', 'recorded signal z')
 plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
@@ -163,7 +172,7 @@ figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier trans
 title('Received signal spectrogram');
 
 %Fs = Fs - Fs * 7 * 10^-6; % actual frequency drift is about 0.12 Hz
-[~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
+[~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits);
 
 % equalizer start()
 sign_x = SignalLongFilter(sign_barker_long, samples, Fs);     %filtering

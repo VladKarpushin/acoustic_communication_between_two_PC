@@ -139,7 +139,7 @@ sound(u, Fs, nBits);         %modulated signal
 % %SignBarker = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; %Barker code N=13
 %tt = 1+kt*(2*length(SignBarker) + n_inf_bits)/F;   %common transmit time
 n = fix(n_inf_bits / period);
-tt = 1 + kt * (2 * length(sign_barker_b1) + n * length(sign_barker_b2) + n_inf_bits)/F;   %common transmit time
+tt = 3 + kt * (2 * length(sign_barker_b1) + n * length(sign_barker_b2) + n_inf_bits)/F;   %common transmit time
 
 nBits = 24;
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
@@ -153,7 +153,7 @@ get(recObj);
 % Record your voice for 5 seconds.
 %recObj = audiorecorder;
 disp('Start recording.');
-recordblocking(recObj, tt+2);
+recordblocking(recObj, tt);
 disp('End of Recording.');
 
 % Store data in double-precision array.
