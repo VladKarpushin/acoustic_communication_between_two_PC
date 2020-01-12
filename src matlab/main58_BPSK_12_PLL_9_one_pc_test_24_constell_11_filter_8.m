@@ -152,7 +152,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_long = Short2Long(sign_barker, samples);
 
@@ -179,7 +179,7 @@ plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 
 [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_long, n_inf_bits, signal_inf_bits);
 
-calc_snr(z, ind_a, ind_b, length(sign_barker_long), freq_burst_size * samples);
+calc_snr(z, ind_a - length(sign_barker_long), ind_b + length(sign_barker_long), freq_burst_size * samples);
 [~, Fs_new] = freq_correction(z_new, ind_a, length(sign_barker_long), freq_burst_size * samples, Fs, F);
 
 [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_long, n_inf_bits, signal_inf_bits);

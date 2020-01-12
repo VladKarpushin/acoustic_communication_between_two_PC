@@ -3,10 +3,8 @@
 % 2020-01-02
 % took into account pll block
 
-function [snr_estimated] = calc_snr(z, ind_a, ind_b, synch_burst_size, freq_burst_size)
+function [snr_estimated] = calc_snr(z, ind_a, ind_b, freq_burst_size)
 
-ind_a = ind_a - synch_burst_size;
-ind_b = ind_b + synch_burst_size;
 index_noise = ind_a - 7 - freq_burst_size;
 if (index_noise > 1) && (ind_b > 1) && (ind_a < length(z)) && (ind_b <= length(z))  %snr estimation 
     s = std(z(ind_a:ind_b));
