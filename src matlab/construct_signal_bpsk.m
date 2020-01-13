@@ -14,6 +14,6 @@ n_total_bits = delay + freq_burst_size + length(sign_sync_b1) + length(sign_sync
 sign_out = zeros(n_total_bits, 1);
 sign_out(1 + delay + freq_burst_size:delay + freq_burst_size + length(sign_sync_b1)) = sign_sync_b1;
 sign_out(1 + delay:delay + freq_burst_size) = 1;
-sign_out(n_total_bits - length(sign_sync_b1) + 1:n_total_bits) = sign_sync_b2;
-sign_out(1 + delay + freq_burst_size + length(sign_sync_b1):delay + freq_burst_size + length(sign_sync) + length(sign_sync_b2)) = sign_inf;
+sign_out(n_total_bits - length(sign_sync_b2) + 1:n_total_bits) = sign_sync_b2;
+sign_out(1 + delay + freq_burst_size + length(sign_sync_b1):delay + freq_burst_size + length(sign_sync_b1) + length(sign_inf)) = sign_inf;
 end
