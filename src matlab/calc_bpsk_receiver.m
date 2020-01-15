@@ -21,16 +21,16 @@ for i = 1:n
     max_abs_corr_integral(i) = max(abs(real(signal_complex)));
     BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits);
 end
-ErrSyst = n_inf_bits * samples - delta; %systematic error between n_inf_bits*samples and delta
-%PLL_offset_vs_BER = [PLL_offset_n' max_abs_corr_integral max_sync_b1 min_sync_b2 max_sync_b1-min_sync_b2 BER delta ErrSyst std_sign_sync];
+err_syst = n_inf_bits * samples - delta; %systematic error between n_inf_bits*samples and delta
+%PLL_offset_vs_BER = [PLL_offset_n' max_abs_corr_integral max_sync_b1 min_sync_b2 max_sync_b1-min_sync_b2 BER delta err_syst std_sign_sync];
 %*******PLL stop ******
 
 %*******output result (start)*********
 m = -2;
 i = -2;
 [m i] = max(max_sync_b1 + max_sync_b2);   %PLL criterion1: max(CCF) - min(CCF) = max
-if abs(ErrSyst(i)) > samples / 2      
-    [m i] = min(abs(ErrSyst));          %PLL criterion2: systematic error = min
+if abs(err_syst(i)) > samples / 2      
+    [m i] = min(abs(err_syst));          %PLL criterion2: systematic error = min
     disp(['PLL criterion2: systematic error = min']);
 end
 
