@@ -45,8 +45,8 @@ sync_b2 = CalcCCF_FFT(est_signal_long, sign_barker_b2_long, 0);
 [max_sync_b1, ind_max_sync_b1] = max(abs(sync_b1));
 [max_sync_b2, ind_max_sync_b2] = max(abs(sync_b2));
 
-if abs(min(sync_b1)) > abs(max(sync_b1))
-%if sign(sync_b1(ind_max_sync_b1)) == 0
+%if abs(min(sync_b1)) > abs(max(sync_b1))
+if sign(sync_b1(ind_max_sync_b1)) < 0
     est_signal_long = -est_signal_long;
 end
 
@@ -66,7 +66,7 @@ ind_b = ind_max_sync_b2 - 1;
 %     return;
 %end
 
-%StdSignSync = std(sync_b1(ind_a:ind_b));  %std(CCF) between two mainlobes
+%std_sync_b1 = std(sync_b1(ind_a:ind_b));  %std(CCF) between two mainlobes
 % SignSyncAdd = zeros(length(sync_b1),1);
 % SignSyncAdd(ind_a) = 1;
 % SignSyncAdd(ind_b-length(sign_barker_long)) = 1;

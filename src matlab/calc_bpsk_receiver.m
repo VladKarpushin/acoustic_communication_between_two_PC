@@ -7,10 +7,10 @@ function [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z, samples, F, Fs, si
 n = 20;
 
 phi = pi * (0:n) / n;
-max_abs_corr_integral   = -2 * ones(n, 1);   %max(CCF received signal and sin wave), max(correlation integral)
-BER                     = -2 * ones(n, 1);   %BER is bit error rate
-max_sync_b1             = -2 * ones(n, 1);   %max_sync_b1 is max(CCF)
-max_sync_b2             = -2 * ones(n, 1);   %min_sync_b2 is min(CCF)
+max_abs_corr_integral   = -2 * ones(n, 1);   % max(CCF received signal and sin wave), max(correlation integral)
+BER                     = -2 * ones(n, 1);   % BER is bit error rate
+max_sync_b1             = -2 * ones(n, 1);   % max(CCF of b1)
+max_sync_b2             = -2 * ones(n, 1);   % max(CCF of b2)
 delta                   = -2 * ones(n, 1);   %delta is difference between index(min_sync_b2) and index(max_sync_b1)
 threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
