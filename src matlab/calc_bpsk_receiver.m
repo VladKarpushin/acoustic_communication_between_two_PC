@@ -14,9 +14,11 @@ max_sync_b2             = -2 * ones(n, 1);   % max(CCF of b2)
 delta                   = -2 * ones(n, 1);   %delta is difference between index(min_sync_b2) and index(max_sync_b1)
 threshold = 0;                      %resolver threshold. Should be zero for BPSK
 
+ind_a                   = -2 * ones(n, 1);   %delta is difference between index(min_sync_b2) and index(max_sync_b1)
+
 for i = 1:n
     [signal_complex] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
-    [est_signal_b, max_sync_b1(i), max_sync_b2(i), Err delta(i)] = calc_signal_estimation_bpsk(threshold, sign_barker_b1_long, sign_barker_b2_long, samples, signal_complex); %This function estimates information bits (information signal)
+    [est_signal_b, max_sync_b1(i), max_sync_b2(i), Err delta(i), ~, ind_a(i)] = calc_signal_estimation_bpsk(threshold, sign_barker_b1_long, sign_barker_b2_long, samples, signal_complex); %This function estimates information bits (information signal)
     
     max_abs_corr_integral(i) = max(abs(real(signal_complex)));
     BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits);
@@ -28,7 +30,8 @@ err_syst = n_inf_bits * samples - delta; %systematic error between n_inf_bits*sa
 %*******output result (start)*********
 m = -2;
 i = -2;
-[m i] = max(max_sync_b1 + max_sync_b2);   %PLL criterion1: max(CCF) - min(CCF) = max
+%[m i] = max(max_sync_b1 + max_sync_b2);   %PLL criterion1: max(CCF) - min(CCF) = max
+[m i] = max(max_sync_b1);   %PLL criterion1: max(CCF) - min(CCF) = max
 if abs(err_syst(i)) > samples / 2      
     [m i] = min(abs(err_syst));          %PLL criterion2: systematic error = min
     disp(['PLL criterion2: systematic error = min']);
@@ -39,6 +42,7 @@ disp(['phi = ', num2str(phi(i) * 180 / pi), ' [degrees]']);
 disp(['phi precision = ', num2str(180 / n), ' [degrees]']);
 disp(['BER = ', num2str(BER(i))]);
 disp(['max_sync_b1 + max_sync_b2 = ', num2str(max_sync_b1(i) + max_sync_b2(i))]);
+disp(['max_sync_b1 = ', num2str(max_sync_b1(i))]);
 
 [signal_complex] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
 [est_signal_b max_sync_b1 min_sync_b2 Err delta signal_constel ind_a ind_b] = calc_signal_estimation_bpsk(threshold, sign_barker_b1_long, sign_barker_b2_long, samples, signal_complex); %This function estimates information bits (information signal)
