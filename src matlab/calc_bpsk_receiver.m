@@ -30,19 +30,28 @@ err_syst = n_inf_bits * samples - delta; %systematic error between n_inf_bits*sa
 %*******output result (start)*********
 m = -2;
 i = -2;
-%[m i] = max(max_sync_b1 + max_sync_b2);   %PLL criterion1: max(CCF) - min(CCF) = max
-[m i] = max(max_sync_b1);   %PLL criterion1: max(CCF) - min(CCF) = max
-if abs(err_syst(i)) > samples / 2      
-    [m i] = min(abs(err_syst));          %PLL criterion2: systematic error = min
-    disp(['PLL criterion2: systematic error = min']);
-end
+[m i] = max(max_sync_b1 + max_sync_b2);   %PLL criterion1: max(CCF) - min(CCF) = max
+%[m i] = max(max_sync_b1);   %PLL criterion2: max(CCF) - min(CCF) = max
+% if abs(err_syst(i)) > samples / 2      
+%     [m i] = min(abs(err_syst));          %PLL criterion3: systematic error = min
+%     disp(['PLL criterion3: systematic error = min']);
+% end
 
 disp(['phi = ', num2str(phi(i)), ' [radians]']);
 disp(['phi = ', num2str(phi(i) * 180 / pi), ' [degrees]']);
 disp(['phi precision = ', num2str(180 / n), ' [degrees]']);
-disp(['BER = ', num2str(BER(i))]);
-disp(['max_sync_b1 + max_sync_b2 = ', num2str(max_sync_b1(i) + max_sync_b2(i))]);
-disp(['max_sync_b1 = ', num2str(max_sync_b1(i))]);
+disp(['BER c1 = ', num2str(BER(i))]);
+%disp(['max_sync_b1 + max_sync_b2 = ', num2str(max_sync_b1(i) + max_sync_b2(i))]);
+%disp(['max_sync_b1 = ', num2str(max_sync_b1(i))]);
+
+[m i] = max(max_sync_b1);   %PLL criterion2: max(CCF) - min(CCF) = max
+disp(['BER c2 = ', num2str(BER(i))]);
+
+if abs(err_syst(i)) > samples / 2      
+    [m i] = min(abs(err_syst));          %PLL criterion3: systematic error = min
+    disp(['PLL criterion3: systematic error = min']);
+    disp(['BER c3 = ', num2str(BER(i))]);
+end
 
 [signal_complex] = calc_coherent_reception_new4(z, samples, F, Fs, phi(i));   %coherent reception
 [est_signal_b max_sync_b1 min_sync_b2 Err delta signal_constel ind_a ind_b] = calc_signal_estimation_bpsk(threshold, sign_barker_b1_long, sign_barker_b2_long, samples, signal_complex); %This function estimates information bits (information signal)
