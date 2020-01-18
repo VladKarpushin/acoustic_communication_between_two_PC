@@ -51,7 +51,7 @@ Fs = 22050;     %sample rate
 F = Fs / 7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 1;      % number of information bits
+n_inf_bits = 1024 * 4 * 10;      % number of information bits
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
@@ -131,7 +131,7 @@ figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-%sound(u, Fs, nBits);         %modulated signal
+sound(u, Fs, nBits);         %modulated signal
 
 %**************************************************
 %***************Receiver***************************
@@ -160,7 +160,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
 sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
@@ -186,12 +186,11 @@ z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, ind_a);
 plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
 % equalizer stop()
 
-[est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits);
-
-calc_snr(z, ind_a - length(sign_barker_b1_long), ind_b + length(sign_barker_b2_long), freq_burst_size * samples);
+[~, ind_a, ~] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits);
 [~, Fs_new] = freq_correction(z_new, ind_a, length(sign_barker_b1_long), freq_burst_size * samples, Fs, F);
 
 [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits);
+calc_snr(z, ind_a - length(sign_barker_b1_long), ind_b + length(sign_barker_b2_long), freq_burst_size * samples);
 
 %write file (start)
 [errmsg] = signal2file('output\output.txt', est_signal_b);
