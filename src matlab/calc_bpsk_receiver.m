@@ -37,19 +37,23 @@ i = -2;
 %     disp(['PLL criterion3: systematic error = min']);
 % end
 
-disp(['phi = ', num2str(phi(i)), ' [radians]']);
-disp(['phi = ', num2str(phi(i) * 180 / pi), ' [degrees]']);
 disp(['phi precision = ', num2str(180 / n), ' [degrees]']);
+disp(['phi c1 = ', num2str(phi(i)), ' [radians]']);
+disp(['phi c1 = ', num2str(phi(i) * 180 / pi), ' [degrees]']);
 disp(['BER c1 = ', num2str(BER(i))]);
 %disp(['max_sync_b1 + max_sync_b2 = ', num2str(max_sync_b1(i) + max_sync_b2(i))]);
 %disp(['max_sync_b1 = ', num2str(max_sync_b1(i))]);
 
 [m i] = max(max_sync_b1);   %PLL criterion2: max(CCF) - min(CCF) = max
+disp(['phi c2 = ', num2str(phi(i)), ' [radians]']);
+disp(['phi c2 = ', num2str(phi(i) * 180 / pi), ' [degrees]']);
 disp(['BER c2 = ', num2str(BER(i))]);
 
 if abs(err_syst(i)) > samples / 2      
     [m i] = min(abs(err_syst));          %PLL criterion3: systematic error = min
     disp(['PLL criterion3: systematic error = min']);
+    disp(['phi c3 = ', num2str(phi(i)), ' [radians]']);
+    disp(['phi c3 = ', num2str(phi(i) * 180 / pi), ' [degrees]']);
     disp(['BER c3 = ', num2str(BER(i))]);
 end
 
