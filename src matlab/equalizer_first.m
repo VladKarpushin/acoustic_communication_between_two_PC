@@ -1,6 +1,5 @@
 % 2019-12-01
-% equalizer input point
-
+% equalizer
 function [sign_y_out] = equalizer_first(sign_x, sign_y, w, index_a)
 
 sign_y_cut = sign_y(index_a - length(sign_x):index_a - 1)';

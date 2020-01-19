@@ -51,7 +51,7 @@ Fs = 22050;     %sample rate
 F = Fs / 7;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 1;      % number of information bits
+n_inf_bits = 1024 * 4 * 8;      % number of information bits
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
@@ -131,7 +131,7 @@ figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-%sound(u, Fs, nBits);         %modulated signal
+sound(u, Fs, nBits);         %modulated signal
 
 %**************************************************
 %***************Receiver***************************
@@ -160,7 +160,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
 sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
@@ -175,15 +175,17 @@ title('Received signal spectrogram');
 [~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
 
 % equalizer start()
-sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
+%sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
 %sign_x = sign_barker_long;
-x = (0:length(sign_x) - 1) * F * Td;
-sign_x = sign_x .* cos(x)';
-z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, ind_a);
+
+%x = (0:length(sign_x) - 1) * F * Td;
+%sign_x = sign_x .* cos(x)';
 %x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 %sign_x = sign_x .* cos(x(1:length(sign_x)))';
+
 %z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, ind_a);
-plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
+
+z_new = equalizer(z, ind_a, sign_barker_b1_long, n_sign_barker, samples, Fs, F);
 % equalizer stop()
 
 [~, ind_a, ~] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
