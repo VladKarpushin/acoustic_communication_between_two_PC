@@ -174,20 +174,7 @@ title('Received signal spectrogram');
 %Fs = Fs - Fs * 7 * 10^-6; % actual frequency drift is about 0.12 Hz
 [~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
 
-% equalizer start()
-%sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
-%sign_x = sign_barker_long;
-
-%x = (0:length(sign_x) - 1) * F * Td;
-%sign_x = sign_x .* cos(x)';
-%x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
-%sign_x = sign_x .* cos(x(1:length(sign_x)))';
-
-%z_new = equalizer_first(sign_x, z, 3 * n_sign_barker, ind_a);
-
-z_new = equalizer(z, ind_a, sign_barker_b1_long, n_sign_barker, samples, Fs, F);
-% equalizer stop()
-
+z_new = equalizer(z, ind_a, sign_barker_b1_long, 3 * n_sign_barker, samples, Fs, F);
 [~, ind_a, ~] = calc_bpsk_receiver(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
 
 [~, Fs_new] = freq_correction(z_new, ind_a, length(sign_barker_b1_long), freq_burst_size * samples, Fs, F);
