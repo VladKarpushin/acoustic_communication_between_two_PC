@@ -45,7 +45,7 @@ Fs = 22050;         % sample rate
 F = Fs / 7;         % frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;             % coefficient of duration of one symbol, kt/F = duration of one symbol
 period = 1024 * 4 * 1;          % packet size
-n_inf_bits = 1024 * 4 * 8;      % number of information bits
+n_inf_bits = 1024 * 4 * 1;      % number of information bits
 
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
@@ -169,21 +169,24 @@ plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
 figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier transform. Divide the waveform into 400-sample segments with 100-sample overlap
 title('Received signal spectrogram');
 
-[~, index_a, ~] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
+[~, ind_a, ~] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
 
 % equalization start()
-sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
+%sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
 %sign_x = sign_barker_b1_long;
 %x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 %sign_x = sign_x .* cos(x(1:length(sign_x)))';
-x = (0:length(sign_x) - 1) * F * Td;
-sign_x = sign_x .* cos(x)';
-z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, index_a);
-plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
+% x = (0:length(sign_x) - 1) * F * Td;
+% sign_x = sign_x .* cos(x)';
+% z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, ind_a);
+% plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
+
+z_new = equalizer(z, ind_a, sign_barker_b1_long, 3 * n_sign_barker_b1, samples, Fs, F);
+
 % equalization stop()
 
-[est_signal_b, index_a, index_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
-calc_snr(z, index_a - length(sign_barker_b1_long), index_b + length(sign_barker_b1_long), 0);
+[est_signal_b, ind_a, ind_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
+calc_snr(z, ind_a - length(sign_barker_b1_long), ind_b + length(sign_barker_b1_long), 0);
 
 %write file start
 %[errmsg] = signal2file('output\output.txt', est_signal_b);
