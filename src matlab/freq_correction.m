@@ -30,10 +30,12 @@ Z_PSD = Z_PSD(1:length(Z_PSD) / 2);
 
 [m i] = max(Z_PSD);
 
+%est_phi = angle(z_spectrum(i));
 est_F = x(i);
 delta = 1 - est_F / F;
 est_Fs = Fs * (1 + delta);
 
+%disp(['estimated phi = ', num2str(est_phi  * 180 / pi), ' [degrees]']);
 disp(['estimated F = ', num2str(est_F), ' Hz']);
 disp(['estimated F precision = ', num2str(x(2)), ' Hz']);
 disp(['est_F - F = ', num2str(est_F - F), ' Hz']);
