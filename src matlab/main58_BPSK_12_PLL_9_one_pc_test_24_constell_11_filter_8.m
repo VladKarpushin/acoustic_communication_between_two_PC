@@ -131,7 +131,7 @@ figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-%sound(u, Fs, nBits);         %modulated signal
+sound(u, Fs, nBits);         %modulated signal
 
 %**************************************************
 %***************Receiver***************************
@@ -160,7 +160,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
 sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
