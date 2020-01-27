@@ -102,7 +102,7 @@ x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 %signal_long = (Short2Long(signal, samples)+1)/2;     %OOK
 signal_long = short_to_long(signal, samples);        %BPSK
 %signal_long(1:delay * samples) = 0;
-signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
+signal_long = shaper_filter(signal_long, samples, Fs);     %filtering
 
 % qpsk_part = 2 * randi([0, 1], length(signal), 1) - 1; % model of information signal is noise
 % qpsk_part = (short_to_long(qpsk_part, samples));        %BPSK

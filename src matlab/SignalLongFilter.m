@@ -1,5 +1,7 @@
-%2016-12-13
-%Function filters signal in order to reduce high frequencies 
+% 2016-12-13
+% Function filters signal in order to reduce high frequencies 
+% this is shaper function
+
 function [SignalLong_filterred] = SignalLongFilter(SignalLong, Samples, Fs)
 % input:
 % output:

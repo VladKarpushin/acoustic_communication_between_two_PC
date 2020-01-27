@@ -93,8 +93,8 @@ end
 %x = linspace(0,kt*n_total_bits*2*pi-(F*Td),n_total_bits*samples);
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 
-signal_long = (Short2Long(signal, samples) + 1) / 2;     % OOK
-%signal_long = (Short2Long(signal, samples));            % BPSK
+signal_long = (short_to_long(signal, samples) + 1) / 2;     % OOK
+%signal_long = (short_to_long(signal, samples));            % BPSK
 signal_long(1:delay * samples) = 0;
 signal_long = SignalLongFilter(signal_long, samples, Fs);     % filtering
 u = signal_long .* cos(x)';
@@ -160,8 +160,8 @@ disp('End of Recording.');
 z = getaudiodata(recObj)';      %received signal
 %z = u';
 
-sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
-sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
+sign_barker_b1_long = short_to_long(sign_barker_b1, samples);
+sign_barker_b2_long = short_to_long(sign_barker_b2, samples);
 
 plot_time(z, Fs, 'sec', 'recorded signal z')
 plot_psd(z, Fs, 'Hz', 'PSD of received signal z');
