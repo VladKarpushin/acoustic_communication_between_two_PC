@@ -68,8 +68,8 @@ freq_burst_size = 1000; % frequency correction burst size, unit is bits
 n_sign_barker = 75;   % quantity of Barker codes in a set.
 sign_barker_one_b1 = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; % Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
 sign_barker_one_b2 = [1 1 1 -1 -1 -1 1 -1 -1 1 -1]'; % Barker code N=11. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems.
-sign_barker_b1 = GetPeriodicBarkerCode(sign_barker_one_b1, n_sign_barker);
-sign_barker_b2 = GetPeriodicBarkerCode(sign_barker_one_b2, n_sign_barker);
+sign_barker_b1 = get_periodic_barker_code(sign_barker_one_b1, n_sign_barker);
+sign_barker_b2 = get_periodic_barker_code(sign_barker_one_b2, n_sign_barker);
 %*****Barker codes set generation (stop)*****
 
 n_total_bits = delay + freq_burst_size + length(sign_barker_b1) + length(sign_barker_b2) + n_inf_bits;
@@ -100,12 +100,12 @@ end
 x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 %x = linspace(0,kt*n_total_bits*2*pi-(F*Td),n_total_bits*samples);
 %signal_long = (Short2Long(signal, samples)+1)/2;     %OOK
-signal_long = Short2Long(signal, samples);        %BPSK
+signal_long = short_to_long(signal, samples);        %BPSK
 %signal_long(1:delay * samples) = 0;
 signal_long = SignalLongFilter(signal_long, samples, Fs);     %filtering
 
 % qpsk_part = 2 * randi([0, 1], length(signal), 1) - 1; % model of information signal is noise
-% qpsk_part = (Short2Long(qpsk_part, samples));        %BPSK
+% qpsk_part = (short_to_long(qpsk_part, samples));        %BPSK
 % qpsk_part = SignalLongFilter(qpsk_part, samples, Fs);     %filtering
 %u = signal_long.*cos(x)' + qpsk_part.*sin(x)';
 
@@ -131,7 +131,7 @@ figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-sound(u, Fs, nBits);         %modulated signal
+%sound(u, Fs, nBits);         %modulated signal
 
 %**************************************************
 %***************Receiver***************************
@@ -162,8 +162,8 @@ disp('End of Recording.');
 z = getaudiodata(recObj)';      %received signal
 %z = u';
 
-sign_barker_b1_long = Short2Long(sign_barker_b1, samples);
-sign_barker_b2_long = Short2Long(sign_barker_b2, samples);
+sign_barker_b1_long = short_to_long(sign_barker_b1, samples);
+sign_barker_b2_long = short_to_long(sign_barker_b2, samples);
 
 plot_time(z, Fs, 'sec', 'recorded signal z')
 plot_psd(z, Fs, 'Hz', 'PSD of received signal z');

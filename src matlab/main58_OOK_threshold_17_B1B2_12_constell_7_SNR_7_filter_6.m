@@ -56,8 +56,8 @@ n_sign_barker_b1 = 75;   % quantity of Barker codes in a set.
 n_sign_barker_b2 = 75;   % quantity of Barker codes in a set.
 sign_barker_one_b1 = [1 1 1 1 1 -1 -1 1 1 -1 1 -1 1]'; % Barker code N=13. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems. Barker codes have length at most 13 and have low correlation sidelobes
 sign_barker_one_b2 = [1 1 1 -1 -1 -1 1 -1 -1 1 -1]'; % Barker code N=11. Barker codes, which are subsets of PN sequences, are commonly used for frame synchronization in digital communication systems.
-sign_barker_b1 = GetPeriodicBarkerCode(sign_barker_one_b1, n_sign_barker_b1);
-sign_barker_b2 = GetPeriodicBarkerCode(sign_barker_one_b2, n_sign_barker_b2);
+sign_barker_b1 = get_periodic_barker_code(sign_barker_one_b1, n_sign_barker_b1);
+sign_barker_b2 = get_periodic_barker_code(sign_barker_one_b2, n_sign_barker_b2);
 %*****Barker codes set generation (stop)*****
 
 n = fix(n_inf_bits / period);
