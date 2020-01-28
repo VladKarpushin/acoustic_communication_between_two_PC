@@ -3,7 +3,7 @@
 
 function [z_out] = equalizer(z, ind_a, sign_barker_b1_long, w, samples, Fs, F)
 
-sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
+sign_x = shaper_filter(sign_barker_b1_long, samples, Fs);     %filtering
 %sign_x = sign_barker_long;
 
 Td = 2 * pi / Fs;   % sampling interval

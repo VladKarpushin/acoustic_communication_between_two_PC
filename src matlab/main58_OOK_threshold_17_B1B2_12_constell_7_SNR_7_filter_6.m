@@ -96,7 +96,7 @@ x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 signal_long = (short_to_long(signal, samples) + 1) / 2;     % OOK
 %signal_long = (short_to_long(signal, samples));            % BPSK
 signal_long(1:delay * samples) = 0;
-signal_long = SignalLongFilter(signal_long, samples, Fs);     % filtering
+signal_long = shaper_filter(signal_long, samples, Fs);     % filtering
 u = signal_long .* cos(x)';
 
 %signal(1:5)
@@ -172,7 +172,7 @@ title('Received signal spectrogram');
 [~, ind_a, ~] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
 
 % equalization start()
-%sign_x = SignalLongFilter(sign_barker_b1_long, samples, Fs);     %filtering
+%sign_x = shaper_filter(sign_barker_b1_long, samples, Fs);     %filtering
 %sign_x = sign_barker_b1_long;
 %x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 %sign_x = sign_x .* cos(x(1:length(sign_x)))';

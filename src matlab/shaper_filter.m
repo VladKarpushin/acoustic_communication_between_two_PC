@@ -19,7 +19,7 @@ windft_gausswinNew = ifftshift(windft_gausswinNew);
 N_rect = fix(nfft / samples);
 windft_rectwin = zeros(nfft, 1);
 windft_rectwin(1:N_rect) = 1;
-windft_rectwin(nfft-N_rect:nfft) = 1;
+windft_rectwin(nfft - N_rect:nfft) = 1;
 
 windft = windft_gausswinNew;
 %windft = windft_rectwin;

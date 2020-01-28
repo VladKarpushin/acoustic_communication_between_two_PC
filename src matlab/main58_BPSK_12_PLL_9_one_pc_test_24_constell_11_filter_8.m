@@ -131,7 +131,7 @@ figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-%sound(u, Fs, nBits);         %modulated signal
+sound(u, Fs, nBits);         %modulated signal
 
 %**************************************************
 %***************Receiver***************************
