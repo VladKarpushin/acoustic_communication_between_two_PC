@@ -19,4 +19,4 @@ fclose(fileID);
 b = dec2bin(a, 8)';  %Convert decimal to binary number in string. Produces a binary representation with at least n bits.
 c = strcat(b(:));   %Concatenate strings horizontally
 d = bin2dec(c);     %Convert binary number string to decimal number
-signal = d * 2-1;     %[-1 1 -1 1]
+signal = d * 2 - 1;     %[-1 1 -1 1]
