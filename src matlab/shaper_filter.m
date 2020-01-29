@@ -21,7 +21,7 @@ windft_rectwin = zeros(nfft, 1);
 windft_rectwin(1:N_rect) = 1;
 windft_rectwin(nfft - N_rect:nfft) = 1;
 
-windft = windft_gausswinNew;
+windft = windft_gausswinNew; % windft can be replaced by G(f)
 %windft = windft_rectwin;
 signal_long_dft = fft(signal_long);
 signal_long_filtered = real(ifft(signal_long_dft .* windft));

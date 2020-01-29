@@ -97,7 +97,7 @@ signal_long = (short_to_long(signal, samples) + 1) / 2;     % OOK
 %signal_long = (short_to_long(signal, samples));            % BPSK
 signal_long(1:delay * samples) = 0;
 signal_long = shaper_filter(signal_long, samples, Fs);     % filtering
-u = signal_long .* cos(x)';
+u = signal_long .* cos(x)';                                 % u[n] can be replaced by s[n]
 
 %signal(1:5)
 % modulation(stop)

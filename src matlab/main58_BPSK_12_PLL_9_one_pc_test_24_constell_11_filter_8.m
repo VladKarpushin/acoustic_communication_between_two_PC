@@ -109,7 +109,7 @@ signal_long = shaper_filter(signal_long, samples, Fs);     %filtering
 % qpsk_part = SignalLongFilter(qpsk_part, samples, Fs);     %filtering
 %u = signal_long.*cos(x)' + qpsk_part.*sin(x)';
 
-u = signal_long .* cos(x)';
+u = signal_long .* cos(x)';                                 % u[n] can be replaced by s[n]
 u = u / std(u);
 %modulation(stop)
 
