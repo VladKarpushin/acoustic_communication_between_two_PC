@@ -1,5 +1,5 @@
 % this function inserts sign_syncB1 into a beginning and an end of signal
-function [sign_out] = InsertSyncB1(sign_inf, sign_sync, delay)
+function [sign_out] = insert_sync_b1(sign_inf, sign_sync, delay)
 % input:
 % sign_inf   - information signal
 % sign_sync  - sync signal B1
@@ -9,7 +9,7 @@ function [sign_out] = InsertSyncB1(sign_inf, sign_sync, delay)
 % of signal
 
 
-n_total_bits = delay + 2*length(sign_sync) + length(sign_inf);
+n_total_bits = delay + 2 * length(sign_sync) + length(sign_inf);
 sign_out = zeros(n_total_bits, 1);
 sign_out(1 + delay:length(sign_sync) + delay) = sign_sync;
 sign_out(n_total_bits - length(sign_sync) + 1:n_total_bits) = - sign_sync;

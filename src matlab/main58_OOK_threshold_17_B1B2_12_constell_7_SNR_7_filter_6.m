@@ -79,9 +79,11 @@ signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % model of information s
 
 
 % adding sync marks (start)
-%signal  = InsertSyncB1(signal_inf_bits,SignBarker, delay);
-signal = InsertSyncB2(signal_inf_bits, sign_barker_b2, period);
-signal = InsertSyncB1(signal, sign_barker_b1, delay);
+% signal = InsertSyncB2(signal_inf_bits, sign_barker_b2, period);
+% signal = InsertSyncB1(signal, sign_barker_b1, delay);
+signal = insert_sync_b2(signal_inf_bits, sign_barker_b2, period);
+signal = insert_sync_b1(signal, sign_barker_b1, delay);
+
 % adding sync marks (stop)
 
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
