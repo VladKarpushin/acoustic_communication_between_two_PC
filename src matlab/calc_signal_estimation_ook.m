@@ -31,54 +31,33 @@ signal_constel = 0;
 ind_a = 0;
 ind_b = 0;
 
-EstSignal = zeros(length(corr_integral),1);
-EstSignal = (2*(corr_integral > threshold))-1;    %resolver
-
-%****syncronization start*******
-% [SignSync Err] = CalcCCF_FFT(EstSignal,SignBarkerLong,0);
-% 
-% [MaxSignSync,ImaxSignSync] = max(SignSync);  %largest element index
-% [MinSignSync,IminSignSync] = min(SignSync);  %smalles element index
-
-% iA = ImaxSignSync + length(SignBarkerLong);
-% iB = IminSignSync-1;
-% if iA > iB                  
-%     iA = IminSignSync + length(SignBarkerLong);
-%     iB = ImaxSignSync-1;
-%     EstSignal = -EstSignal;
-% end
-% StdSignSync = std(SignSync(iA:iB-length(SignBarkerLong)));  %std(CCF) between two mainlobes
-% 
-% est_signal_b = Long2Short(EstSignal(iA:iB),samples);
-%delta = iB-iA;
-%****syncronization stop*******
-
+est_signal_long = zeros(length(corr_integral), 1);
+est_signal_long = (2 * (corr_integral > threshold)) - 1;    %resolver
 
 %**************************************************************
-%new part
-SignSyncB1 = CalcCCF_FFT(EstSignal,sign_barker_b1_long, 0);
+sync_b1 = CalcCCF_FFT(est_signal_long, sign_barker_b1_long, 0);
 
-[max_sync_b1,ImaxSignSyncB1] = max(SignSyncB1);  %largest element index
-[min_sync_b1,IminSignSyncB1] = min(SignSyncB1);  %smalles element index
+[max_sync_b1, ind_max_sync_b1] = max(sync_b1);  %largest element index
+[min_sync_b1, ind_min_sync_b1] = min(sync_b1);  %smalles element index
 
-ind_a = ImaxSignSyncB1 + length(sign_barker_b1_long);
-ind_b = IminSignSyncB1-1;
+ind_a = ind_max_sync_b1 + length(sign_barker_b1_long);
+ind_b = ind_min_sync_b1 - 1;
 
 if ind_a > ind_b                                      %inversion check
-    ind_a = IminSignSyncB1 + length(sign_barker_b1_long);
-    ind_b = ImaxSignSyncB1-1;
-    EstSignal = -EstSignal;
+    ind_a = ind_min_sync_b1 + length(sign_barker_b1_long);
+    ind_b = ind_max_sync_b1 - 1;
+    est_signal_long = - est_signal_long;
 end
-StdSignSync = std(SignSyncB1(ind_a:ind_b-length(sign_barker_b1_long)));  %std(CCF) between two mainlobes
-delta = ind_b-ind_a;
+%StdSignSync = std(sync_b1(ind_a:ind_b-length(sign_barker_b1_long)));  %std(CCF) between two mainlobes
+%delta = ind_b - ind_a;
 
-SignSyncB2 = CalcCCF_FFT(EstSignal,sign_barker_b2_long, 0);
-% figure, plot(SignSyncB2);
-% title('SignSyncB2');
+sync_b2 = CalcCCF_FFT(est_signal_long, sign_barker_b2_long, 0);
+% figure, plot(sync_b2);
+% title('sync_b2');
 % 
-% x = 1:length(SignSyncB1);
-% figure, plot(x,SignSyncB1,'r',x,SignSyncB2,'b');
-% title('SignSyncB1 (red) and SignSyncB2 (blue)');
+% x = 1:length(sync_b1);
+% figure, plot(x,sync_b1,'r',x,sync_b2,'b');
+% title('sync_b1 (red) and sync_b2 (blue)');
 
 n_packets = fix(n_inf_bits/period);
 packet = zeros(period,n_packets);
@@ -89,18 +68,18 @@ packet_tail_SignalContell = zeros(lenghth_packet_tail,1); %last packet if abs(n_
 est_signal_b = zeros(n_packets*period + lenghth_packet_tail,1);
 signal_constel = zeros(n_packets*period + lenghth_packet_tail,1);
 
-MaxSignSyncB2     = zeros(n_packets,1);   %MaxSignSync is max(CCFB2)
-ImaxSignSyncB2     = zeros(n_packets,1);   %iMaxSignSync is imax(CCFB2)
+max_sync_b2     = zeros(n_packets,1);   %MaxSignSync is max(CCFB2)
+ind_max_sync_b2     = zeros(n_packets,1);   %iMaxSignSync is imax(CCFB2)
 
 for i=1:n_packets
-    mask = zeros(length(SignSyncB2),1);
+    mask = zeros(length(sync_b2),1);
     iB = ind_a+i*(period*samples+length(sign_barker_b2_long));
     iA = iB - 2*length(sign_barker_b2_long);
     
     if iB <= length(mask)
         mask(iA:iB) = 1;
-        tmp = SignSyncB2.*mask;
-        [MaxSignSyncB2(i),ImaxSignSyncB2(i)] = max(SignSyncB2.*mask);  %largest element index
+        tmp = sync_b2.*mask;
+        [max_sync_b2(i), ind_max_sync_b2(i)] = max(sync_b2 .* mask);  %largest element index
     else
         %disp(['Error. Wrong iB value) = ',num2str(iB)]);
         Err = 1;
@@ -108,14 +87,14 @@ for i=1:n_packets
     end
     
     
-%     x = 1:length(SignSyncB2);
-%     figure, plot(x,SignSyncB2,x,mask);
+%     x = 1:length(sync_b2);
+%     figure, plot(x,sync_b2,x,mask);
 end
 
 
 if n_packets >0
-    packetLong = EstSignal(ind_a:ImaxSignSyncB2(1)-1);
-    packetLong_SignalContell = signal_complex(ind_a:ImaxSignSyncB2(1)-1);
+    packetLong = est_signal_long(ind_a:ind_max_sync_b2(1)-1);
+    packetLong_SignalContell = signal_complex(ind_a:ind_max_sync_b2(1)-1);
     p = Long2Short(packetLong,samples);
     p_SignalContell = Long2Short(packetLong_SignalContell,samples);
     if length(p) == period
@@ -129,9 +108,9 @@ if n_packets >0
         
     
     for i=2:n_packets
-        iB = ImaxSignSyncB2(i)-1;
-        iA = ImaxSignSyncB2(i-1) + length(sign_barker_b2_long);
-        packetLong  = EstSignal(iA:iB);
+        iB = ind_max_sync_b2(i)-1;
+        iA = ind_max_sync_b2(i-1) + length(sign_barker_b2_long);
+        packetLong  = est_signal_long(iA:iB);
         packetLong_SignalContell = signal_complex(iA:iB);
         p = Long2Short(packetLong,samples);
         p_SignalContell = Long2Short(packetLong_SignalContell,samples);
@@ -154,10 +133,10 @@ end
 
 if lenghth_packet_tail >0
     if n_packets >0
-        packetLong = EstSignal(ImaxSignSyncB2(n_packets) + length(sign_barker_b2_long):ind_b);
-        packetLong_SignalContell = signal_complex(ImaxSignSyncB2(n_packets) + length(sign_barker_b2_long):ind_b);
+        packetLong = est_signal_long(ind_max_sync_b2(n_packets) + length(sign_barker_b2_long):ind_b);
+        packetLong_SignalContell = signal_complex(ind_max_sync_b2(n_packets) + length(sign_barker_b2_long):ind_b);
     else
-        packetLong = EstSignal(ind_a:ind_b);
+        packetLong = est_signal_long(ind_a:ind_b);
         packetLong_SignalContell = signal_complex(ind_a:ind_b);
     end
     p = Long2Short(packetLong,samples);
