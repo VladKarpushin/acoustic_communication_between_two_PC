@@ -46,6 +46,7 @@ F = Fs / 7;         % frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F 
 kt = 2;             % coefficient of duration of one symbol, kt/F = duration of one symbol
 period = 1024 * 4 * 1;          % packet size
 n_inf_bits = 1024 * 4 * 1;      % number of information bits
+%n_inf_bits = 1024 * 5;      % number of information bits
 
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval

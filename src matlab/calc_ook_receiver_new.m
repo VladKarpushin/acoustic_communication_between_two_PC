@@ -15,7 +15,7 @@ max_sign_sync = -2 * ones(n, 1);
 min_sign_sync = -2 * ones(n, 1);
 
 for i = 1:n
-    [est_signal_b, max_sign_sync(i), min_sign_sync(i), ~] = CalcSignalEstimationNew4B1B2(corr_integral,threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); %This function estimates information bits (information signal)
+    [est_signal_b, max_sign_sync(i), min_sign_sync(i)] = calc_signal_estimation_ook(corr_integral,threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); %This function estimates information bits (information signal)
 %     if length(est_signal_b) == n_inf_bits
 %     %if length(est_signal_b) == length(signal_inf_bits)
 %         BER(i) = mean(abs(est_signal_b - signal_inf_bits) / 2);   %The bit error rate (BER)
@@ -34,7 +34,7 @@ disp(['max_sign_sync-min_sign_sync = ', num2str(m)]);
 disp(['BER = ', num2str(BER(i))]);
 [signal_complex] = CalcNoncoherentReceptionNew(z, samples, F, Fs);      %signal_complex - complex signal
 corr_integral = real(signal_complex).^2 + imag(signal_complex).^2;       %detected amplitude (amplitude envelope quadrature)
-[est_signal_b, ~, ~, ~, ~, ~, signal_constel, index_a, index_b] = CalcSignalEstimationNew4B1B2(corr_integral, threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); % this function estimates information bits (information signal)
+[est_signal_b, ~, ~, ~, signal_constel, index_a, index_b] = calc_signal_estimation_ook(corr_integral, threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); % this function estimates information bits (information signal)
 thr = threshold(i);
 
 plot_time(corr_integral, Fs, 'sec', 'corr integral')
