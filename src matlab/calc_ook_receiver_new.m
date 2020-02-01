@@ -3,7 +3,7 @@
 function [est_signal_b, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits)
 
 %****noncoherent reception start *******
-signal_complex = CalcNoncoherentReceptionNew(z, samples, F, Fs);            % signal_complex - complex signal
+signal_complex = calc_non_coherent_reception(z, samples, F, Fs);            % signal_complex - complex signal
 corr_integral = real(signal_complex).^2 + imag(signal_complex).^2;          % detected amplitude (amplitude envelope quadrature)
 %****noncoherent reception stop*******
 
@@ -33,7 +33,7 @@ i = -2;
 disp(['threshold = ', num2str(threshold(i))]);
 disp(['max_sign_sync-min_sign_sync = ', num2str(m)]);
 disp(['BER = ', num2str(BER(i))]);
-[signal_complex] = CalcNoncoherentReceptionNew(z, samples, F, Fs);      %signal_complex - complex signal
+[signal_complex] = calc_non_coherent_reception(z, samples, F, Fs);      %signal_complex - complex signal
 corr_integral = real(signal_complex).^2 + imag(signal_complex).^2;       %detected amplitude (amplitude envelope quadrature)
 [est_signal_b, ~, ~, ~, signal_constel, index_a, index_b] = calc_signal_estimation_ook(corr_integral, threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); % this function estimates information bits (information signal)
 thr = threshold(i);

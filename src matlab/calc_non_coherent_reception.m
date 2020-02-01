@@ -1,6 +1,7 @@
-%2016-02-13 This function realise noncoherent reception
-%реализуетс€ коррел€ционный приЄм по двум квадратурным составл€ющим.
-function [signal_complex] = CalcNoncoherentReceptionNew(z, T, F, Fs)
+% 2016-02-13 This function realise noncoherent reception
+% реализуетс€ коррел€ционный приЄм по двум квадратурным составл€ющим.
+
+function [signal_complex] = calc_non_coherent_reception(z, T, F, Fs)
 % input:
 % 	z - received signal
 %   T     - window of filter
@@ -14,17 +15,19 @@ Td = 2 * pi / Fs;   %sampling interval
 step = F * Td;
 x = 0:step:(length(z) - 1) * step;
 
-figure;
-h = histogram(abs(z));
-title('z histogramm');
-hx = h.BinWidth*(1:h.NumBins);
-hy = h.Values;
-hn = round(h.NumBins*0.3);    %take 30%
-[m i] = max(hy(length(hy)-hn:length(hy)));
-EstMax = hx(length(hy)+i-hn-1);
-z = z / EstMax;
-figure,plot(z);
-title('z/EstMax');
+z = z / std(z);
+
+% figure;
+% h = histogram(abs(z));
+% title('z histogramm');
+% hx = h.BinWidth*(1:h.NumBins);
+% hy = h.Values;
+% hn = round(h.NumBins*0.3);    %take 30%
+% [m i] = max(hy(length(hy)-hn:length(hy)));
+% EstMax = hx(length(hy)+i-hn-1);
+% z = z / EstMax;
+% figure,plot(z);
+% title('z/EstMax');
 
 %z = z/max(z);
 z_sin = z .* sin(x);        %coefficient of correlation with sin

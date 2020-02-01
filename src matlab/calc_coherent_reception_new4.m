@@ -18,6 +18,8 @@ Td = 2 * pi / Fs;   %sampling interval
 step = F * Td;
 x = 0:step:(length(z) - 1) * step;
 
+z = z / std(z);
+
 z_sin = z .* sin(x + phi);        %coefficient of correlation with sin
 z_cos = z .* cos(x + phi);        %coefficient of correlation with cos
 
