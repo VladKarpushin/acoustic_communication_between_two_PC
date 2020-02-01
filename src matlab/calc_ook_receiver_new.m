@@ -8,14 +8,15 @@ corr_integral = real(signal_complex).^2 + imag(signal_complex).^2;          % de
 %****noncoherent reception stop*******
 
 %****information signal estimation (start)*******
-threshold = 0:0.01:0.6;  %resolver threshold
+%threshold = 0:0.01:0.6;  %resolver threshold. max(corr_integral)
+threshold = linspace(min(corr_integral), max(corr_integral));
 n = length(threshold);
 BER = -2 * ones(n, 1);
 max_sign_sync = -2 * ones(n, 1);
 min_sign_sync = -2 * ones(n, 1);
 
 for i = 1:n
-    [est_signal_b, max_sign_sync(i), min_sign_sync(i)] = calc_signal_estimation_ook(corr_integral,threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); %This function estimates information bits (information signal)
+    [est_signal_b, max_sign_sync(i), min_sign_sync(i)] = calc_signal_estimation_ook(corr_integral, threshold(i), sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex); %This function estimates information bits (information signal)
 %     if length(est_signal_b) == n_inf_bits
 %     %if length(est_signal_b) == length(signal_inf_bits)
 %         BER(i) = mean(abs(est_signal_b - signal_inf_bits) / 2);   %The bit error rate (BER)
