@@ -5,7 +5,7 @@
 %2016-11-27 added code for signal constellation
 %2016-12-03 added index_a and index_b export for SNR calculation
 
-function [est_signal_b, max_sync_b1, min_sync_b1, Err, signal_constel, ind_a, ind_b] = calc_signal_estimation_ook(corr_integral, threshold, sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex)
+function [est_signal_b, max_sync_b1, min_sync_b1, err, signal_constel, ind_a, ind_b] = calc_signal_estimation_ook(corr_integral, threshold, sign_barker_b1_long, sign_barker_b2_long, samples, n_inf_bits, period, signal_complex)
 % input:
 % 	corr_integral    - cross correlation function (CCF) received signal SignR and sin wave. Another name is correlation integral
 % 	threshold       - resolver threshold. Should be zero for BPSK
@@ -14,7 +14,7 @@ function [est_signal_b, max_sync_b1, min_sync_b1, Err, signal_constel, ind_a, in
 %   signal_complex   - complex signal
 % output:
 % 	est_signal_b     - estimated information bits
-%   Err             - error information
+%   err             - error information
 %   MaxSignSync     - MaxSignSync is max(CCF)
 %   MinSignSync     - MinSignSync is min(CCF)
 %   delta           - delta is difference between index(MinSignSync) and index(MaxSignSync)
@@ -23,7 +23,7 @@ function [est_signal_b, max_sync_b1, min_sync_b1, Err, signal_constel, ind_a, in
 %   ind_a            - index of first symbol. For SNR estimation
 %   ind_b            - index of last symbol. For SNR estimation
 
-Err = 0;
+err = 0;
 max_sync_b1 = 0;
 min_sync_b1 = 0;
 est_signal_b = 0;
@@ -82,7 +82,7 @@ for i=1:n_packets
         [max_sync_b2(i), ind_max_sync_b2(i)] = max(sync_b2 .* mask);  %largest element index
     else
         %disp(['Error. Wrong iB value) = ',num2str(iB)]);
-        Err = 1;
+        err = 1;
         return;
     end
     
@@ -95,14 +95,14 @@ end
 if n_packets >0
     packetLong = est_signal_long(ind_a:ind_max_sync_b2(1)-1);
     packetLong_SignalContell = signal_complex(ind_a:ind_max_sync_b2(1)-1);
-    p = Long2Short(packetLong,samples);
-    p_SignalContell = Long2Short(packetLong_SignalContell,samples);
+    p = long_to_short(packetLong,samples);
+    p_SignalContell = long_to_short(packetLong_SignalContell,samples);
     if length(p) == period
         packet(:,1) = p;
         packet_SignalContell(:,1) = p_SignalContell;
     else
         %disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
-        Err = 1;
+        err = 1;
         return;
     end
         
@@ -112,14 +112,14 @@ if n_packets >0
         iA = ind_max_sync_b2(i-1) + length(sign_barker_b2_long);
         packetLong  = est_signal_long(iA:iB);
         packetLong_SignalContell = signal_complex(iA:iB);
-        p = Long2Short(packetLong,samples);
-        p_SignalContell = Long2Short(packetLong_SignalContell,samples);
+        p = long_to_short(packetLong,samples);
+        p_SignalContell = long_to_short(packetLong_SignalContell,samples);
         if length(p) == period
             packet(:,i) = p;
             packet_SignalContell(:,i) = p_SignalContell;
         else
             %disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
-            Err = 1;
+            err = 1;
             return;
         end
     end
@@ -139,17 +139,17 @@ if lenghth_packet_tail >0
         packetLong = est_signal_long(ind_a:ind_b);
         packetLong_SignalContell = signal_complex(ind_a:ind_b);
     end
-    p = Long2Short(packetLong,samples);
-    p_SignalContell = Long2Short(packetLong_SignalContell,samples);
+    p = long_to_short(packetLong,samples);
+    p_SignalContell = long_to_short(packetLong_SignalContell,samples);
     if length(p) == lenghth_packet_tail %there was mistake here (period), rectified 20161015
         packet_tail = p;
         packet_tail_SignalContell = p_SignalContell;
     else
         %disp(['Error. Packet size is wrong) = ',num2str(length(p))]);
-        Err = 1;
+        err = 1;
         return;
     end
-    %packet_tail = Long2Short(packetLong,samples);
+    %packet_tail = long_to_short(packetLong,samples);
     est_signal_b(length(est_signal_b) - lenghth_packet_tail+1:length(est_signal_b)) = packet_tail;
     signal_constel(length(est_signal_b) - lenghth_packet_tail+1:length(est_signal_b)) = packet_tail_SignalContell;
 end
@@ -157,7 +157,7 @@ end
 
 if abs(length(est_signal_b)/8 - fix(length(est_signal_b)/8)) > 0                  %checking if length of est_signal_b is multiple with 8
     disp(['Error. abs(length(est_signal_b)/8 - fix(length(est_signal_b)/8)) > 0. length(est_signal_b) = ',num2str(length(est_signal_b))]);
-    Err = 1;
+    err = 1;
     return;
 end
 end

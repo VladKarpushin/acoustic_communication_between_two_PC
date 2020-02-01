@@ -1,7 +1,7 @@
 %function converts signal from long form to short. For example, long signal is [-1 -1, 1  1], samples = 2, then short singnal is [-1, 1] 
 % This is sampler function
 
-function [sign_short] = Long2Short(sign_long, samples)
+function [sign_short] = long_to_short(sign_long, samples)
 % input:
 % sign_long - long signal
 % samples
@@ -18,12 +18,12 @@ function [sign_short] = Long2Short(sign_long, samples)
 % end
 
 
-iA = fix(samples / 2);
-iB = length(sign_long);
-nMax = round(iB / samples);
-sign_short =  zeros(nMax, 1);
+ind_a = fix(samples / 2);
+ind_b = length(sign_long);
+short_size = round(ind_b / samples);
+sign_short =  zeros(short_size, 1);
 i = 1;
-for n = iA:samples:iB
+for n = ind_a:samples:ind_b
     sign_short(i) = sign_long(n);
     i = i + 1;
 end
