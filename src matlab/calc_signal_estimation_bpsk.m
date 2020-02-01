@@ -39,8 +39,8 @@ est_signal_long = (2 * (real(signal_complex) > threshold)) - 1;    %resolver
 % title('est_signal_long');
 
 %****syncronization start*******
-sync_b1 = CalcCCF_FFT(est_signal_long, sign_barker_b1_long, 0);
-sync_b2 = CalcCCF_FFT(est_signal_long, sign_barker_b2_long, 0);
+sync_b1 = calc_ccf_fft(est_signal_long, sign_barker_b1_long, 0);
+sync_b2 = calc_ccf_fft(est_signal_long, sign_barker_b2_long, 0);
 
 [max_sync_b1, ind_max_sync_b1] = max(abs(sync_b1));
 [max_sync_b2, ind_max_sync_b2] = max(abs(sync_b2));

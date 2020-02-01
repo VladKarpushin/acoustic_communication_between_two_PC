@@ -35,7 +35,7 @@ est_signal_long = zeros(length(corr_integral), 1);
 est_signal_long = (2 * (corr_integral > threshold)) - 1;    %resolver
 
 %**************************************************************
-sync_b1 = CalcCCF_FFT(est_signal_long, sign_barker_b1_long, 0);
+sync_b1 = calc_ccf_fft(est_signal_long, sign_barker_b1_long, 0);
 
 [max_sync_b1, ind_max_sync_b1] = max(sync_b1);  %largest element index
 [min_sync_b1, ind_min_sync_b1] = min(sync_b1);  %smalles element index
@@ -51,7 +51,7 @@ end
 %StdSignSync = std(sync_b1(ind_a:ind_b-length(sign_barker_b1_long)));  %std(CCF) between two mainlobes
 %delta = ind_b - ind_a;
 
-sync_b2 = CalcCCF_FFT(est_signal_long, sign_barker_b2_long, 0);
+sync_b2 = calc_ccf_fft(est_signal_long, sign_barker_b2_long, 0);
 % figure, plot(sync_b2);
 % title('sync_b2');
 % 
