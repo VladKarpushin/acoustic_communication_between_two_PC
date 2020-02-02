@@ -3,7 +3,7 @@
 % 2016-07-06 added offset for PLL
 % 2016-11-05 added code for signal constellation
 % 2020-01-08 added phi
-
+% can be replaced by calc_signal_complex()
 function [signal_complex] = calc_coherent_reception(z, T, F, Fs, phi)
 % input:
 % 	z - received signal (Rx signal)

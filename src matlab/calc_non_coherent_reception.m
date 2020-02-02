@@ -1,6 +1,6 @@
 % 2016-02-13 This function realises noncoherent reception
 % реализуетс€ коррел€ционный приЄм по двум квадратурным составл€ющим.
-
+% can be replaced by calc_signal_complex()
 
 
 
