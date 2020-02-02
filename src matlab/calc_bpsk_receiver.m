@@ -4,9 +4,9 @@
 function [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, criterion)
 
 %*******PLL start ******
-n = 20;
-
-phi = pi * (0:n) / n;
+n = 30;
+%phi = pi * (0:n) / n;
+phi = linspace(0, pi, n);
 max_abs_corr_integral   = -2 * ones(n, 1);   % max(CCF received signal and sin wave), max(correlation integral)
 BER                     = -2 * ones(n, 1);   % BER is bit error rate
 max_sync_b1             = -2 * ones(n, 1);   % max(CCF of b1)
@@ -17,7 +17,7 @@ threshold = 0;                      %resolver threshold. Should be zero for BPSK
 %ind_a                   = -2 * ones(n, 1);   %delta is difference between index(min_sync_b2) and index(max_sync_b1)
 
 for i = 1:n
-    [signal_complex] = calc_coherent_reception(z, samples, F, Fs, phi(i));   %coherent reception
+    [signal_complex] = calc_signal_complex(z, samples, F, Fs, phi(i));   %coherent reception
     [est_signal_b, max_sync_b1(i), max_sync_b2(i), ~, ~, ind_a, ind_b] = calc_signal_estimation_bpsk(threshold, sign_barker_b1_long, sign_barker_b2_long, samples, signal_complex); %This function estimates information bits (information signal)
     delta(i) = ind_b - ind_a;
     max_abs_corr_integral(i) = max(abs(real(signal_complex)));
@@ -56,7 +56,7 @@ if abs(err_syst(i)) > samples / 2
     disp(['BER c3 = ', num2str(BER(i))]);
 end
 
-[signal_complex] = calc_coherent_reception(z, samples, F, Fs, phi(i));   %coherent reception
+[signal_complex] = calc_signal_complex(z, samples, F, Fs, phi(i));   %coherent reception
 [est_signal_b, ~, ~, ~, signal_constel, ind_a, ind_b] = calc_signal_estimation_bpsk(threshold, sign_barker_b1_long, sign_barker_b2_long, samples, signal_complex); %This function estimates information bits (information signal)
 
 plot_time(real(signal_complex), Fs, 'sec', 'corr integral')
