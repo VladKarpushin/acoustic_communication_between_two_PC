@@ -4,7 +4,7 @@
 function [est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, criterion)
 
 %*******PLL start ******
-n = 30;
+n = 50;
 %phi = pi * (0:n) / n;
 phi = linspace(0, pi, n);
 max_abs_corr_integral   = -2 * ones(n, 1);   % max(CCF received signal and sin wave), max(correlation integral)
