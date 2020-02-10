@@ -33,10 +33,7 @@ ind_b = 0;
 %corr_integral = real(signal_complex);
 est_signal_long = zeros(length(signal_complex), 1);
 est_signal_long = (2 * (real(signal_complex) > threshold)) - 1;    %resolver
-% x = 1:length(est_signal_long);
-% x=x/Fs;
-% figure,plot(x,est_signal_long);
-% title('est_signal_long');
+est_signal_long_q = (2 * (imag(signal_complex) > threshold)) - 1;    % resolver for q part of qpsk
 
 %****syncronization start*******
 sync_b1 = calc_ccf_fft(est_signal_long, sign_barker_b1_long, 0);
@@ -50,51 +47,18 @@ if sign(sync_b1(ind_max_sync_b1)) < 0
     est_signal_long = -est_signal_long;
 end
 
-% disp('Sync signal information');
-% disp(['max_sync_b1 = ',num2str(max_sync_b1),', ind_max_sync_b1 = ',num2str(ind_max_sync_b1)]);
-% disp(['max_sync_b2 = ',num2str(max_sync_b2),', ind_max_sync_b2 = ',num2str(ind_max_sync_b2)]);
-
 ind_a = ind_max_sync_b1 + length(sign_barker_b1_long);
 ind_b = ind_max_sync_b2 - 1;
-% if ind_a > ind_b                  
-%     ind_a = ind_max_sync_b2 + length(sign_barker_long);
-%     ind_b = ind_max_sync_b1 - 1;
-%     est_signal_long = - est_signal_long;
-%     signal_complex = - signal_complex;
-%     disp('Error. Sync error. ind_max_sync_b1 > ind_max_sync_b2 ');
-%     err = 1;
-%     return;
-%end
-
-%std_sync_b1 = std(sync_b1(ind_a:ind_b));  %std(CCF) between two mainlobes
-% SignSyncAdd = zeros(length(sync_b1),1);
-% SignSyncAdd(ind_a) = 1;
-% SignSyncAdd(ind_b-length(sign_barker_long)) = 1;
-% x = 1:length(sync_b1);
-%figure, plotyy(x,sync_b1,x,SignSyncAdd)
 
 est_signal_b = long_to_short(est_signal_long(ind_a:ind_b), samples);
+est_signal_b_q = long_to_short(est_signal_long_q(ind_a:ind_b), samples);
 signal_constel = long_to_short(signal_complex(ind_a:ind_b), samples);
-%delta = ind_b - ind_a;
-
-% nMax = round((ind_b-ind_a)/samples);
-% ind_a = ind_a + fix(samples/2);
-% est_signal_b =  zeros(nMax,1);
-% i = 1;
-% for n = ind_a:samples:ind_b
-%     est_signal_b(i) = est_signal_long(n);
-%     i = i + 1;
-% end
 %****syncronization stop*******
 
+
 if abs(length(est_signal_b) / 8 - fix(length(est_signal_b) / 8)) > 0                  %checking if length of est_signal_b is multiple with 8
-    disp(['Error. abs(length(est_signal_b)/8 - fix(length(est_signal_b)/8)) > 0. length(est_signal_b) = ',num2str(length(est_signal_b))]);
+    disp(['Error. abs(length(est_signal_b)/8 - fix(length(est_signal_b)/8)) > 0. length(est_signal_b) = ', num2str(length(est_signal_b))]);
     err = 1;
     return;
 end
-% x=1:length(EstSignalDecimation);
-% figure,stem(EstSignalDecimation);
-% title('EstSignalDecimation');
-% figure,plot(x,EstSignalDecimation,x,est_signal_long);
-% title('EstSignalDecimation + est_signal_long');
 end
