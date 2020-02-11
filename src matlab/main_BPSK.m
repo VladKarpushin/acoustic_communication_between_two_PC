@@ -47,9 +47,9 @@ end
 %******************************
 %Fs - Sampling rate in Hz. Valid values depend on the specific audio hardware installed. Typical values supported by most sound cards are 8000, 11025, 22050, 44100, 48000, and 96000 Hz.
 %Fs = 96000;
+
 Fs = 11025;     %sample rate
 F = Fs / 3;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
-%F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
 n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
@@ -163,6 +163,7 @@ figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier trans
 title('Received signal spectrogram');
 
 %Fs = Fs - Fs * 7 * 10^-6; % actual frequency drift is about 0.12 Hz
+Fs = Fs - Fs * 1 * 10^-6; % actual frequency drift is about 0.12 Hz
 [~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
 
 z_new = equalizer(z, ind_a, sign_barker_b1_long, 3 * n_sign_barker, samples, Fs, F);
