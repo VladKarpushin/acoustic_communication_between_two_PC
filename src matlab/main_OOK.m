@@ -174,19 +174,7 @@ title('Received signal spectrogram');
 
 [~, ind_a, ~] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
 
-% equalization start()
-%sign_x = shaper_filter(sign_barker_b1_long, samples, Fs);     %filtering
-%sign_x = sign_barker_b1_long;
-%x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
-%sign_x = sign_x .* cos(x(1:length(sign_x)))';
-% x = (0:length(sign_x) - 1) * F * Td;
-% sign_x = sign_x .* cos(x)';
-% z_new = equalizer_first(sign_x, z, 3 * n_sign_barker_b1, ind_a);
-% plot_psd(z_new, Fs, 'Hz', 'PSD of equalized received z');
-
-z_new = equalizer(z, ind_a, sign_barker_b1_long, 3 * n_sign_barker_b1, samples, Fs, F);
-
-% equalization stop()
+z_new = equalizer(z, ind_a, sign_barker_b1_long, 12 * n_sign_barker_b1, samples, Fs, F);
 
 [est_signal_b, ind_a, ind_b] = calc_ook_receiver_new(z_new, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits);
 calc_snr(z, ind_a - length(sign_barker_b1_long), ind_b + length(sign_barker_b1_long), 0);
