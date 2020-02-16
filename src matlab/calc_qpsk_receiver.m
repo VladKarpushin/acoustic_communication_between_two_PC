@@ -21,10 +21,10 @@ for i = 1:n
     [est_signal_b, max_sync_b1(i), max_sync_b2(i), ~, ~, ind_a, ind_b] = calc_signal_estimation_bpsk(threshold, sign_barker_b1_long, sign_barker_b2_long, samples, signal_complex, 'qpsk'); %This function estimates information bits (information signal)
     delta(i) = ind_b - ind_a;
     max_abs_corr_integral(i) = max(abs(real(signal_complex)));
-    BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits, 'debug');
-    %BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits);
+    %BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits, 'debug');
+    BER(i) = calc_ber(signal_inf_bits, est_signal_b, n_inf_bits);
 end
-err_syst = n_inf_bits * samples - delta; %systematic error between n_inf_bits*samples and delta
+err_syst = (n_inf_bits / 2) * samples - delta; %systematic error between n_inf_bits*samples and delta
 %PLL_offset_vs_BER = [PLL_offset_n' max_abs_corr_integral max_sync_b1 min_sync_b2 max_sync_b1-min_sync_b2 BER delta err_syst std_sign_sync];
 %*******PLL stop ******
 

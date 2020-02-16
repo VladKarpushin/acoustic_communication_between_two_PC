@@ -124,7 +124,7 @@ figure, spectrogram(u, 400, 100, [], Fs);
 title('Transmitted signal spectrogram');
 
 nBits = 24;
-%sound(u, Fs, nBits);         %modulated signal
+sound(u, Fs, nBits);         %modulated signal
 
 %**************************************************
 %***************Receiver***************************
@@ -153,7 +153,7 @@ disp('End of Recording.');
 
 % Store data in double-precision array.
 z = getaudiodata(recObj)';      %received signal
-z = u';
+%z = u';
 
 sign_barker_b1_long = short_to_long(sign_barker_b1, samples);
 sign_barker_b2_long = short_to_long(sign_barker_b2, samples);
@@ -165,13 +165,13 @@ figure, spectrogram(z, 400, 100, [], Fs); % Compute the short-time Fourier trans
 title('Received signal spectrogram');
 
 %Fs = Fs - Fs * 7 * 10^-6; % actual frequency drift is about 0.12 Hz
-[~, ind_a, ~] = calc_qpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits2, signal_inf_bits, 'c2');
+[~, ind_a, ~] = calc_qpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
 
 [~, Fs_new] = freq_correction(z, ind_a, length(sign_barker_b1_long), freq_burst_size * samples, Fs, F);
-[~, ind_a, ~] = calc_qpsk_receiver(z, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits2, signal_inf_bits, 'c2');
+[~, ind_a, ~] = calc_qpsk_receiver(z, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
 
 z_new = equalizer(z, ind_a, sign_barker_b1_long, 12 * n_sign_barker, samples, Fs_new, F);
-[est_signal_b, ind_a, ind_b] = calc_qpsk_receiver(z_new, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits2, signal_inf_bits, 'c1');
+[est_signal_b, ind_a, ind_b] = calc_qpsk_receiver(z_new, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c1');
 
 calc_snr(z, ind_a - length(sign_barker_b1_long), ind_b + length(sign_barker_b2_long), freq_burst_size * samples);
 
