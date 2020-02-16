@@ -51,13 +51,14 @@ Fs = 11025;     %sample rate
 F = Fs / 3;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 1;      % number of information bits
+n_inf_bits = 1024 * 4 * 10;      % number of information bits
 n_inf_bits2 = n_inf_bits / 2;
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
 delay = 1000;       % time delay in a beginning of transmission, unit is bits
 freq_burst_size = 1000; % frequency correction burst size, unit is bits
+freq_burst = ones(freq_burst_size, 1);
 
 %*****Barker codes set generation (start)*****
 n_sign_barker = 75;   % quantity of Barker codes in a set.
@@ -69,7 +70,7 @@ sign_barker_b2 = get_periodic_barker_code(sign_barker_one_b2, n_sign_barker);
 
 n_total_bits_i = delay + freq_burst_size + length(sign_barker_b1) + length(sign_barker_b2) + n_inf_bits2;
 n_total_bits_q = n_inf_bits2;
-show_sign_para(kt, F, Fs, n_total_bits_i, n_inf_bits, delay);
+show_sign_para(kt, F, Fs, n_total_bits_i, n_inf_bits, delay); % should be improved
 
 %modulation(start)
 signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % model of information signal is noise
@@ -84,8 +85,8 @@ signal_inf_bits_q = signal_inf_bits(1 + n_inf_bits2: end);
 % signal_inf_bits(1:fix(n_inf_bits/2)) = -1;
 
 %adding sync marks (start)
-signal_i  = construct_signal_bpsk(signal_inf_bits_i, sign_barker_b1, sign_barker_b2, delay, freq_burst_size);
-signal_q  = construct_signal_bpsk(signal_inf_bits_q, zeros(length(sign_barker_b1), 1), zeros(length(sign_barker_b2), 1), delay, freq_burst_size);
+signal_i  = construct_signal_bpsk(signal_inf_bits_i, sign_barker_b1, sign_barker_b2, delay, freq_burst);
+signal_q  = construct_signal_bpsk(signal_inf_bits_q, zeros(length(sign_barker_b1), 1), zeros(length(sign_barker_b2), 1), delay, zeros(length(freq_burst), 1));
 %adding sync marks (stop)
 
 samples = kt * Fs / F;       %!!!! number of samples per one symbol
@@ -102,6 +103,7 @@ signal_long_q = short_to_long(signal_q, samples);        % QPSK q part
 signal_long_q = shaper_filter(signal_long_q, samples, Fs);     %filtering
 
 u = signal_long_i .* cos(x)' + signal_long_q .* sin(x)';
+%u = signal_long_q .* sin(x)';
 %u = signal_long_i .* cos(x)';                                 % u[n] can be replaced by s[n]
 u = u / std(u);
 %modulation(stop)

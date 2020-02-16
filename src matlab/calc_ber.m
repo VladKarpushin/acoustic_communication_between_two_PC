@@ -9,7 +9,7 @@ end
 
 BER = -2;
 
-if  strcmp(m_type, 'debug')
+if strcmp(m_type, 'debug')
     %BER = mean(abs(sign_orig(1:n_inf_bits) - sign_est(1:n_inf_bits)) / 2);   %The bit error rate (BER) calculation
     BER = mean(abs(sign_orig(end - n_inf_bits:end) - sign_est(end - n_inf_bits:end)) / 2);   %The bit error rate (BER) calculation
     return;

@@ -1,7 +1,13 @@
 % 2019-12-08
 % to display signal parameters
 
-function show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits, delay)
+function show_sign_para(kt, F, Fs, n_total_bits, n_inf_bits, delay, m_type)
+
+if nargin < 7
+    m_type = 'bpsk or ook'; 
+end
+
+%if strcmp(m_type, 'debug')
 
 t = kt * (n_total_bits - delay) / F;   %common transmit time
 disp(['Sampling rate = ', num2str(Fs),' Hz']);
@@ -15,3 +21,4 @@ disp(['Net bitrate = ', num2str(fix(n_inf_bits / t)),' [bits / s]']);
 disp(['Symbol rate = baud rate = ', num2str(F / kt),' [Hz]']);
 disp(['common transmit time = ', num2str(t),' [s]']);
 disp(['K = samples per one symbol = ', num2str(kt * Fs / F),' [samples]']);
+
