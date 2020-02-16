@@ -51,7 +51,7 @@ end
 Fs = 11025;     %sample rate
 F = Fs / 3;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 1;      % number of information bits
+n_inf_bits = 1024 * 4 * 10;      % number of information bits
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
@@ -166,10 +166,10 @@ title('Received signal spectrogram');
 [~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
 
 [~, Fs_new] = freq_correction(z, ind_a, length(sign_barker_b1_long), freq_burst_size * samples, Fs, F);
-[~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c1');
+[~, ind_a, ~] = calc_bpsk_receiver(z, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
 
 z_new = equalizer(z, ind_a, sign_barker_b1_long, 12 * n_sign_barker, samples, Fs_new, F);
-[est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c2');
+[est_signal_b, ind_a, ind_b] = calc_bpsk_receiver(z_new, samples, F, Fs_new, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, signal_inf_bits, 'c1');
 
 calc_snr(z, ind_a - length(sign_barker_b1_long), ind_b + length(sign_barker_b2_long), freq_burst_size * samples);
 
