@@ -8,7 +8,9 @@ In this tutorial you will learn:
 
 -   how to transfer information by OOK modulation
 -   how to transfer information by BPSK modulation
-- 	how to work with ofdm transmitter/receiver
+-   how to transfer information by QPSK modulation
+-   how to realise equalizer
+- 	how to work with ofdm transmitter/receiver and cycle prefix(CP)
 
 Theory
 ------
