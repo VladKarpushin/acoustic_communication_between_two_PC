@@ -51,7 +51,7 @@ Fs = 11025;     %sample rate
 F = Fs / 3;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 %F = Fs/5;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 10;      % number of information bits
+n_inf_bits = 1024 * 4 * 1;      % number of information bits
 n_inf_bits2 = n_inf_bits / 2;
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
@@ -70,7 +70,7 @@ sign_barker_b2 = get_periodic_barker_code(sign_barker_one_b2, n_sign_barker);
 
 n_total_bits_i = delay + freq_burst_size + length(sign_barker_b1) + length(sign_barker_b2) + n_inf_bits2;
 n_total_bits_q = n_inf_bits2;
-show_sign_para(kt, F, Fs, n_total_bits_i, n_inf_bits, delay); % should be improved
+show_sign_para(kt, F, Fs, n_total_bits_i, n_inf_bits, delay, n_total_bits_q); % should be improved
 
 %modulation(start)
 signal_inf_bits = 2 * randi([0, 1], n_inf_bits, 1) - 1; % model of information signal is noise

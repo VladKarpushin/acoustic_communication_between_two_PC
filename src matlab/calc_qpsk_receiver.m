@@ -33,13 +33,15 @@ m = -2;
 i = -2;
 disp(['phi precision = ', num2str(180 / n), ' [degrees]']);
 
-if criterion == 'c1'
+%if criterion == 'c1'
+if strcmp(criterion, 'c1')
     [m i] = max(max_sync_b1 + max_sync_b2);   %PLL criterion1: max(CCF_b1) + max(CCF_b2) = max
     disp(['PLL criterion1: max(max_sync_b1 + max_sync_b2)']);
     disp(['phi c1 = ', num2str(phi(i)), ' [radians]']);
     disp(['phi c1 = ', num2str(phi(i) * 180 / pi), ' [degrees]']);
     disp(['BER c1 = ', num2str(BER(i))]);
-elseif criterion == 'c2'
+%elseif criterion == 'c2'
+elseif strcmp(criterion, 'c2')
     [m i] = max(max_sync_b1);   %PLL criterion2: max(max_sync_b1)
     disp(['PLL criterion2: max(max_sync_b1)']);
     disp(['phi c2 = ', num2str(phi(i)), ' [radians]']);

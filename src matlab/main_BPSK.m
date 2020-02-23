@@ -51,7 +51,7 @@ end
 Fs = 11025;     %sample rate
 F = Fs / 3;  %frequency of signal, 200<F<Fs/2, [Hz]. F = Fs/14 - max, F = Fs/30 - max for Fs = 96000; For example, F = Fs/30, 30 - number of samples per one wave
 kt = 2;     %coefficient of duration of one symbol, kt/F = duration of one symbol
-n_inf_bits = 1024 * 4 * 10;      % number of information bits
+n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = 1024 * 4 * 1;      % number of information bits
 %n_inf_bits = length(signal_inf_bits);
 Td = 2 * pi / Fs;   % sampling interval
@@ -97,9 +97,11 @@ x = 0:F * Td:(kt * n_total_bits * 2 * pi) - (F * Td);
 signal_long = short_to_long(signal, samples);        %BPSK
 signal_long = shaper_filter(signal_long, samples, Fs);     %filtering
 
-% qpsk_part = 2 * randi([0, 1], length(signal), 1) - 1; % model of information signal is noise
-% qpsk_part = (short_to_long(qpsk_part, samples));        %BPSK
-% qpsk_part = SignalLongFilter(qpsk_part, samples, Fs);     %filtering
+
+% qpsk_part = 2 * randi([0, 1], length(signal_inf_bits), 1) - 1; % model of information signal is noise
+% qpsk_part  = construct_signal_bpsk(qpsk_part, zeros(length(sign_barker_b1), 1), zeros(length(sign_barker_b2), 1), delay, zeros(length(freq_burst), 1));
+% qpsk_part = short_to_long(qpsk_part, samples);        %BPSK
+% qpsk_part = shaper_filter(qpsk_part, samples, Fs);     %filtering
 %u = signal_long.*cos(x)' + qpsk_part.*sin(x)';
 
 u = signal_long .* cos(x)';                                 % u[n] can be replaced by s[n]

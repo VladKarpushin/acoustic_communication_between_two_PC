@@ -60,7 +60,8 @@ est_signal_b_q = long_to_short(est_signal_long_q(ind_a:ind_b), samples);
 signal_constel = long_to_short(signal_complex(ind_a:ind_b), samples);
 %****syncronization stop*******
 
-if m_type == 'qpsk'
+%if m_type == 'qpsk'
+if strcmp(m_type, 'qpsk')
     est_signal_b = vertcat(est_signal_b, est_signal_b_q);
 end
 
