@@ -3,7 +3,7 @@
 function [est_signal_b, index_a, index_b] = calc_ook_receiver_new(z, samples, F, Fs, sign_barker_b1_long, sign_barker_b2_long, n_inf_bits, period, signal_inf_bits)
 
 %****noncoherent reception start *******
-signal_complex = calc_signal_complex(z, samples, F, Fs, 0);            % signal_complex - complex signal
+signal_complex = calc_signal_complex(z, samples, F, Fs, 0);                 % signal_complex - complex signal
 corr_integral = real(signal_complex).^2 + imag(signal_complex).^2;          % detected amplitude (amplitude envelope quadrature)
 %****noncoherent reception stop*******
 
